@@ -1,0 +1,60 @@
+{% extends 'rest_framework/base.html' %}
+{% load i18n %}
+
+{% block body %}
+    <body class="{% block bodyclass %}{% endblock %}">
+    <div class="wrapper">
+        {% block navbar %}
+            <div class="navbar navbar-static-top {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}"
+                 role="navigation" aria-label="{% trans "navbar" %}">
+                <div class="container">
+            <span>
+              {% block branding %}
+                  <a class='navbar-brand' rel="nofollow" href='/'>
+                    Issue Tracker API
+                </a>
+              {% endblock %}
+            </span>
+                    <ul class="navbar-left nav navbar-nav">
+                        <li><a href="/api">Home</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav pull-right">
+                        {% block userlinks %}
+                            <div class="navbar-collapse collapse">
+                                <ul class="nav navbar-nav navbar-right">
+                                    {% if user.is_authenticated %}
+                                        <li><a id="id_username"
+                                               href=api/users/{% trans user.username %}>{% trans user.username %}</a>
+                                        </li>
+                                        <li><a id="logout" href="/accounts/logout">
+                                            <span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+                                    {% else %}
+                                        <li><a id="twitter_login" href="/accounts/twitter/login"><span
+                                                class="glyphicon glyphicon-log-in"></span>Login
+                                            with Twitter</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div><!--/.navbar-collapse -->
+                        {% endblock %}
+                    </ul>
+                </div>
+            </div>
+        {% endblock %}
+
+        <div class="container">
+
+            <!-- Content -->
+            <div id="content" role="main" style="margin-top: 100px">
+                {% block content %}
+                    <div class="col-md-12">
+                        <div class="jumbotron">
+                            <h1>Welcome to Issue Tracker API!</h1>
+                            <p>Login with Twitter to get started.</p>
+                        </div>
+                    </div>
+                {% endblock content %}
+            </div><!-- /.content -->
+        </div><!-- /.container -->
+    </div><!-- ./wrapper -->
+    </body>
+{% endblock %}
