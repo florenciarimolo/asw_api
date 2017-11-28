@@ -31,8 +31,8 @@ class Index(views.APIView):
 
 class UsersList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
-    all_usernames = [u.username for u in User.objects.all() if u.username != 'admin']
-    queryset = User.objects.filter(username__in=all_usernames)
+    #all_usernames = [u.username for u in User.objects.all() if u.username != 'admin']
+    #queryset = User.objects.filter(username__in=all_usernames)
     serializer_class = UserSerializer
 
 
