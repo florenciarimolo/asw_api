@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from collections import OrderedDict
 
+from django.db import OperationalError
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 # Create your views here.
@@ -29,10 +30,13 @@ class Index(views.APIView):
         return Response(data, )
 
 
-class UsersList(generics.ListCreateAPIView):
+class UsersList(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
-    #all_usernames = [u.username for u in User.objects.all() if u.username != 'admin']
-    #queryset = User.objects.filter(username__in=all_usernames)
+    try:
+        all_usernames = [u.username for u in User.objects.all() if u.username != 'admin']
+        queryset = User.objects.filter(username__in=all_usernames)
+    except OperationalError:
+        pass
     serializer_class = UserSerializer
 
 
