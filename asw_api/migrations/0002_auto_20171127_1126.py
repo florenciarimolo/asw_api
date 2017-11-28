@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-
+from django.contrib.auth.models import User
 
 class Migration(migrations.Migration):
 
@@ -17,12 +17,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='comments',
             name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, to_field='username'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=User, to_field='username'),
         ),
         migrations.AlterField(
             model_name='issues',
             name='assignee',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assignee', to=settings.AUTH_USER_MODEL, to_field='username'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assignee', to=User, to_field='username'),
         ),
         migrations.DeleteModel(
             name='Usuaris',
