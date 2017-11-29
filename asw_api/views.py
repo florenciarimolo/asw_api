@@ -55,6 +55,9 @@ class IssuesList(generics.ListCreateAPIView):
     queryset = Issues.objects.all()
     serializer_class = IssuesSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
 
 class IssuesDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)

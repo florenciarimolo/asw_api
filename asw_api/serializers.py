@@ -43,6 +43,7 @@ class CommentsSerializer(serializers.ModelSerializer):
 class IssuesSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
     comments = CommentsSerializer(many=True, read_only=True)
+    owner = serializers.ReadOnlyField(source='owner.username')
 
     def get_url(self, obj):
         request = self.context.get('request', None)
