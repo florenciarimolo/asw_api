@@ -64,13 +64,16 @@ class IssuesDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class CommentsList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
-    queryset = Comments.objects.all()
     serializer_class = CommentsSerializer
-    filter_backends = [DjangoFilterBackend, ]
-    filter_fields = ('issue_id',)
+
+    def get_queryset(self):
+        issue_id = self.kwargs.get('pk')
+        return Comments.objects.filter(issue_id=issue_id)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        issue_id = self.kwargs.get('pk')
+        issue = Issues.objects.filter(id=issue_id)[0]
+        serializer.save(user=self.request.user, issue=issue)
 
 
 class CommentsDetail(generics.RetrieveUpdateDestroyAPIView):

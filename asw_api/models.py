@@ -19,6 +19,6 @@ class Issues(models.Model):
 class Comments(models.Model):
     comment = models.TextField()
     user = models.ForeignKey(User, to_field='username')
-    issue_id = models.ForeignKey(Issues, related_name='comments', to_field='id')
+    issue = models.ForeignKey(Issues, related_name='comments', to_field='id')
 
 

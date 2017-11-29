@@ -27,11 +27,12 @@ class UserSerializer(serializers.ModelSerializer):
 class CommentsSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
     user = serializers.ReadOnlyField(source='user.username')
+    issue = serializers.ReadOnlyField(source='issue.id')
 
     def get_url(self, obj):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
-        kwargs = {'pk': obj.id}
+        kwargs = {'pk': obj.id, 'issue_id': obj.issue_id}
         return reverse('comments-detail', request=request, format=format, kwargs=kwargs)
 
     class Meta:
