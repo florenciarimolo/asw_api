@@ -69,6 +69,9 @@ class CommentsList(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, ]
     filter_fields = ('issue_id',)
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 class CommentsDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)

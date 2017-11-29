@@ -26,6 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CommentsSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
+    user = serializers.ReadOnlyField(source='user.username')
 
     def get_url(self, obj):
         request = self.context.get('request', None)
