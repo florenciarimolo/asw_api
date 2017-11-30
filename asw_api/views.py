@@ -14,7 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_extensions import generics as genericsx
-from asw_api.serializers import IssuesSerializer, UserSerializer, CommentsSerializer
+from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer
 from asw_api.models import Issues, Comments
 
 FORBIDDEN_MESSAGE = {'details': 'You don\'t have permission to do this action using the credentials you supplied.'}
@@ -65,7 +65,7 @@ class UsersList(generics.ListAPIView):
     serializer_class = UserSerializer
 
 
-class UsersDetail(generics.ListAPIView):
+class UserDetail(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         kwargs = self.kwargs.get('username')
@@ -77,15 +77,15 @@ class UsersDetail(generics.ListAPIView):
 class IssuesList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = Issues.objects.all()
-    serializer_class = IssuesSerializer
+    serializer_class = IssueSerializer
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
 
-class IssuesDetail(genericsx.RetrieveUpdateDestroyAPIView):
+class IssueDetail(genericsx.RetrieveUpdateDestroyAPIView):
     queryset = Issues.objects.all()
-    serializer_class = IssuesSerializer
+    serializer_class = IssueSerializer
 
     def put(self, request, *args, **kwargs):
         issue = Issues.objects.get(id=self.kwargs.get('pk'))
@@ -104,7 +104,7 @@ class IssuesDetail(genericsx.RetrieveUpdateDestroyAPIView):
 
 class CommentsList(generics.ListCreateAPIView):
 
-    serializer_class = CommentsSerializer
+    serializer_class = CommentSerializer
 
     def get_queryset(self):
         issue_id = self.kwargs.get('pk')
@@ -116,9 +116,9 @@ class CommentsList(generics.ListCreateAPIView):
         serializer.save(owner=self.request.user, issue=issue)
 
 
-class CommentsDetail(genericsx.RetrieveUpdateDestroyAPIView):
+class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
     queryset = Comments.objects.all()
-    serializer_class = CommentsSerializer
+    serializer_class = CommentSerializer
 
     def put(self, request, *args, **kwargs):
         comment = Comments.objects.get(id=self.kwargs.get('pk'))

@@ -24,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('url', 'username', 'first_name', 'last_name', 'image_url')
 
 
-class CommentsSerializer(serializers.ModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
     owner = serializers.ReadOnlyField(source='owner.username')
     issue = serializers.ReadOnlyField(source='issue.id')
@@ -40,9 +40,9 @@ class CommentsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class IssuesSerializer(serializers.ModelSerializer):
+class IssueSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
-    comments = CommentsSerializer(many=True, read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
     owner = serializers.ReadOnlyField(source='owner.username')
 
     def get_url(self, obj):
