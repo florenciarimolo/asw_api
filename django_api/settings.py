@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'asw_api',
     'django_filters',
     # The Django sites framework is required
@@ -84,7 +85,6 @@ TEMPLATES = [
     },
 ]
 
-
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
@@ -103,6 +103,10 @@ REST_FRAMEWORK = {
     #'DEFAULT_PAGINATION_CLASS': 'drf_hal_json.pagination.HalPageNumberPagination',
 	#'DEFAULT_PARSER_CLASSES': ('drf_hal_json.parsers.JsonHalParser',),
 	#'DEFAULT_RENDERER_CLASSES': ('drf_hal_json.renderers.JsonHalRenderer',),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    )
 }
 
 # Database
