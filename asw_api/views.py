@@ -21,10 +21,6 @@ FORBIDDEN_MESSAGE = {'details': 'You don\'t have permission to do this action us
 
 def has_update_or_destroy_object_permission(request, obj):
 
-    if request.user.is_authenticated:
-        print(obj.owner.username)
-        return obj.owner.username == request.user.username
-    else:
         token = request.META['HTTP_AUTHORIZATION'].replace('Token ', '')
         owner_id = obj.owner.id
         owner_token_value = Token.objects.get(user_id=owner_id).key
