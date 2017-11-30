@@ -6,7 +6,6 @@ from collections import OrderedDict
 from django.contrib.auth.models import User
 from django.db import OperationalError
 from rest_framework import generics
-from rest_framework import permissions
 from rest_framework import status
 from rest_framework import views
 from rest_framework.authtoken.models import Token
@@ -20,33 +19,19 @@ from asw_api.models import Issues, Comments
 FORBIDDEN_MESSAGE = {'details': 'You don\'t have permission to do this action using the credentials you supplied.'}
 
 
-def has_object_permission(request, obj):
-    # Read permissions are allowed to any request,
-    # so we'll always allow GET, HEAD or OPTIONS requests.
-    print('has_permission function')
-    if request.method in permissions.SAFE_METHODS:
-        print('safe method')
-        if request.user.is_authenticated:
-            return True
-        token = request.META['HTTP_AUTHORIZATION'].replace('Token ', '')
-        token_obj = Token.objects.get(key=token)  # check if the token exists
-        if token_obj is None:
-            return False
-        return True
+def has_update_or_destroy_object_permission(request, obj):
+
+    if request.user.is_authenticated:
+        print(obj.owner.username)
+        return obj.owner.username == request.user.username
     else:
-        print('not safe method')
-        if request.user.is_authenticated:
-            print(obj.owner.username)
-            return obj.owner.username == request.user.username
-        else:
-            token = request.META['HTTP_AUTHORIZATION'].replace('Token ', '')
-            owner_id = obj.owner.id
-            owner_token_value = Token.objects.get(user_id=owner_id).key
-            return token == owner_token_value
+        token = request.META['HTTP_AUTHORIZATION'].replace('Token ', '')
+        owner_id = obj.owner.id
+        owner_token_value = Token.objects.get(user_id=owner_id).key
+        return token == owner_token_value
 
 
 class Index(views.APIView):
-
     def get(self, request, format=None):
         data = OrderedDict((
             ('users', reverse('users-list', request=request, format=format)),
@@ -56,7 +41,6 @@ class Index(views.APIView):
 
 
 class UsersList(generics.ListAPIView):
-
     try:
         all_usernames = [u.username for u in User.objects.all() if u.username != 'admin']
         queryset = User.objects.filter(username__in=all_usernames)
@@ -66,7 +50,6 @@ class UsersList(generics.ListAPIView):
 
 
 class UserDetail(generics.ListAPIView):
-
     def get(self, request, *args, **kwargs):
         kwargs = self.kwargs.get('username')
         user = User.objects.filter(username=kwargs)[0]
@@ -90,20 +73,19 @@ class IssueDetail(genericsx.RetrieveUpdateDestroyAPIView):
     def put(self, request, *args, **kwargs):
         issue = Issues.objects.get(id=self.kwargs.get('pk'))
         print(issue.owner.username)
-        if has_object_permission(request, issue):
+        if has_update_or_destroy_object_permission(request, issue):
             return self.update(request, *args, **kwargs)
         return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
 
     def delete(self, request, *args, **kwargs):
         issue = Issues.objects.get(id=self.kwargs.get('pk'))
         print(issue.owner.username)
-        if has_object_permission(request, issue):
+        if has_update_or_destroy_object_permission(request, issue):
             return self.destroy(request, *args, **kwargs)
         return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
 
 
 class CommentsList(generics.ListCreateAPIView):
-
     serializer_class = CommentSerializer
 
     def get_queryset(self):
@@ -122,14 +104,12 @@ class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
         comment = Comments.objects.get(id=self.kwargs.get('pk'))
-        print(comment.owner.username)
-        if has_object_permission(request, comment):
+        if has_update_or_destroy_object_permission(request, comment):
             return self.update(request, *args, **kwargs)
         return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
 
     def delete(self, request, *args, **kwargs):
         comment = Comments.objects.get(id=self.kwargs.get('pk'))
-        print(comment.owner.username)
-        if has_object_permission(request, comment):
+        if has_update_or_destroy_object_permission(request, comment):
             return self.destroy(request, *args, **kwargs)
         return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
