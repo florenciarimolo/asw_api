@@ -3,15 +3,19 @@ from __future__ import unicode_literals
 
 from collections import OrderedDict
 
+from django.contrib.auth.models import User
 from django.db import OperationalError
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework import views
+from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from asw_api.serializers import *
+from rest_framework.reverse import reverse
+from rest_extensions import generics as genericsx
+from asw_api.serializers import IssuesSerializer, UserSerializer, CommentsSerializer
+from asw_api.models import Issues, Comments
 
 FORBIDDEN_MESSAGE = {'details': 'You don\'t have permission to do this action using the credentials you supplied.'}
 
@@ -79,7 +83,7 @@ class IssuesList(generics.ListCreateAPIView):
         serializer.save(owner=self.request.user)
 
 
-class IssuesDetail(generics.RetrieveUpdateDestroyAPIView):
+class IssuesDetail(genericsx.RetrieveUpdateDestroyAPIView):
     queryset = Issues.objects.all()
     serializer_class = IssuesSerializer
 
@@ -112,7 +116,7 @@ class CommentsList(generics.ListCreateAPIView):
         serializer.save(owner=self.request.user, issue=issue)
 
 
-class CommentsDetail(generics.RetrieveUpdateDestroyAPIView):
+class CommentsDetail(genericsx.RetrieveUpdateDestroyAPIView):
     queryset = Comments.objects.all()
     serializer_class = CommentsSerializer
 

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from asw_api.models import *
+from asw_api.models import Issues, Comments
 from django.contrib.auth.models import User
 
 
