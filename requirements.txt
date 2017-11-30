@@ -2,3 +2,5 @@ django
 djangorestframework
 django-filter
 django-allauth
+drf-nested-fields
+drf-hal-json

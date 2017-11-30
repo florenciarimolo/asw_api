@@ -97,7 +97,12 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
-    )
+    ),
+    #'DEFAULT_MODEL_SERIALIZER_CLASS': 'drf_hal_json.serializers.HalModelSerializer',
+    #'DEFAULT_PAGINATION_SERIALIZER_CLASS': 'drf_hal_json.serializers.HalPaginationSerializer',
+    #'DEFAULT_PAGINATION_CLASS': 'drf_hal_json.pagination.HalPageNumberPagination',
+	#'DEFAULT_PARSER_CLASSES': ('drf_hal_json.parsers.JsonHalParser',),
+	#'DEFAULT_RENDERER_CLASSES': ('drf_hal_json.renderers.JsonHalRenderer',),
 }
 
 # Database
@@ -152,3 +157,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+

@@ -16,7 +16,7 @@ from asw_api.serializers import *
 from rest_framework import generics, viewsets
 from rest_framework import views
 from django.shortcuts import render
-
+from drf_hal_json.views import HalCreateModelMixin
 
 class Index(views.APIView):
     permission_classes = (IsAuthenticated,)
@@ -24,8 +24,8 @@ class Index(views.APIView):
     def get(self, request, format=None):
         data = OrderedDict((
             ('users', reverse('users-list', request=request, format=format)),
-            ('issues', reverse('issues-list', request=request, format=format)),
-            ('comments', reverse('comments-list', request=request, format=format))
+            ('issues', reverse('issues-list', request=request, format=format)) #,
+            #('comments', reverse('comments-list', request=request, format=format))
         ))
         return Response(data, )
 
@@ -50,7 +50,7 @@ class UsersDetail(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class IssuesList(generics.ListCreateAPIView):
+class IssuesList(HalCreateModelMixin, generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = Issues.objects.all()
     serializer_class = IssuesSerializer

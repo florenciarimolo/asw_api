@@ -4,6 +4,9 @@ from rest_framework.reverse import reverse
 from asw_api.models import *
 from django.contrib.auth.models import User
 
+from drf_hal_json.serializers import HalModelSerializer
+from drf_nested_fields.serializers import NestedFieldsSerializerMixin
+
 
 class UserSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
@@ -24,7 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('url', 'username', 'first_name', 'last_name', 'image_url')
 
 
-class CommentsSerializer(serializers.ModelSerializer):
+class CommentsSerializer(HalModelSerializer, NestedFieldsSerializerMixin):
     url = serializers.SerializerMethodField()
     user = serializers.ReadOnlyField(source='user.username')
     issue = serializers.ReadOnlyField(source='issue.id')
@@ -40,7 +43,7 @@ class CommentsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class IssuesSerializer(serializers.ModelSerializer):
+class IssuesSerializer(HalModelSerializer, NestedFieldsSerializerMixin):
     url = serializers.SerializerMethodField()
     comments = CommentsSerializer(many=True, read_only=True)
     owner = serializers.ReadOnlyField(source='owner.username')
@@ -53,4 +56,14 @@ class IssuesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Issues
-        fields = '__all__'
+        fields = ('url', 'comments', 'owner')#'__all__'
+        nested_fields = {
+        'comments': (
+            ['comment'],
+            {
+                'user': (
+                    ['username']
+            )
+            }
+        )
+        }
