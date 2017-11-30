@@ -33,7 +33,7 @@ class CommentSerializer(serializers.ModelSerializer):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
         kwargs = {'pk': obj.id, 'issue_id': obj.issue_id}
-        return reverse('comments-detail', request=request, format=format, kwargs=kwargs)
+        return reverse('comment-detail', request=request, format=format, kwargs=kwargs)
 
     class Meta:
         model = Comments
@@ -49,7 +49,7 @@ class IssueSerializer(serializers.ModelSerializer):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
         kwargs = {'pk': obj.id}
-        return reverse('issues-detail', request=request, format=format, kwargs=kwargs)
+        return reverse('issue-detail', request=request, format=format, kwargs=kwargs)
 
     class Meta:
         model = Issues
