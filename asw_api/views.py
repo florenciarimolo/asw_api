@@ -4,34 +4,55 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 
 from django.db import OperationalError
-from django.shortcuts import render
-from django_filters.rest_framework import DjangoFilterBackend
-# Create your views here.
+from rest_framework import generics
+from rest_framework import permissions
+from rest_framework import status
+from rest_framework import views
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.reverse import reverse
 
-from asw_api.models import *
 from asw_api.serializers import *
-from rest_framework import generics, viewsets
-from rest_framework import views
-from django.shortcuts import render
+
+FORBIDDEN_MESSAGE = {'details': 'You don\'t have permission to do this action using the credentials you supplied.'}
+
+
+def has_object_permission(request, obj):
+    # Read permissions are allowed to any request,
+    # so we'll always allow GET, HEAD or OPTIONS requests.
+    print('has_permission function')
+    if request.method in permissions.SAFE_METHODS:
+        print('safe method')
+        if request.user.is_authenticated:
+            return True
+        token = request.META['HTTP_AUTHORIZATION'].replace('Token ', '')
+        token_obj = Token.objects.get(key=token)  # check if the token exists
+        if token_obj is None:
+            return False
+        return True
+    else:
+        print('not safe method')
+        if request.user.is_authenticated:
+            print(obj.owner.username)
+            return obj.owner.username == request.user.username
+        else:
+            token = request.META['HTTP_AUTHORIZATION'].replace('Token ', '')
+            owner_id = obj.owner.id
+            owner_token_value = Token.objects.get(user_id=owner_id).key
+            return token == owner_token_value
 
 
 class Index(views.APIView):
-    permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
         data = OrderedDict((
             ('users', reverse('users-list', request=request, format=format)),
             ('issues', reverse('issues-list', request=request, format=format)),
-            ('comments', reverse('comments-list', request=request, format=format))
         ))
         return Response(data, )
 
 
 class UsersList(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
+
     try:
         all_usernames = [u.username for u in User.objects.all() if u.username != 'admin']
         queryset = User.objects.filter(username__in=all_usernames)
@@ -41,7 +62,6 @@ class UsersList(generics.ListAPIView):
 
 
 class UsersDetail(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         kwargs = self.kwargs.get('username')
@@ -60,13 +80,26 @@ class IssuesList(generics.ListCreateAPIView):
 
 
 class IssuesDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated,)
     queryset = Issues.objects.all()
     serializer_class = IssuesSerializer
 
+    def put(self, request, *args, **kwargs):
+        issue = Issues.objects.get(id=self.kwargs.get('pk'))
+        print(issue.owner.username)
+        if has_object_permission(request, issue):
+            return self.update(request, *args, **kwargs)
+        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+
+    def delete(self, request, *args, **kwargs):
+        issue = Issues.objects.get(id=self.kwargs.get('pk'))
+        print(issue.owner.username)
+        if has_object_permission(request, issue):
+            return self.destroy(request, *args, **kwargs)
+        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+
 
 class CommentsList(generics.ListCreateAPIView):
-    permission_classes = (IsAuthenticated,)
+
     serializer_class = CommentsSerializer
 
     def get_queryset(self):
@@ -76,10 +109,23 @@ class CommentsList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         issue_id = self.kwargs.get('pk')
         issue = Issues.objects.filter(id=issue_id)[0]
-        serializer.save(user=self.request.user, issue=issue)
+        serializer.save(owner=self.request.user, issue=issue)
 
 
 class CommentsDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated,)
     queryset = Comments.objects.all()
     serializer_class = CommentsSerializer
+
+    def put(self, request, *args, **kwargs):
+        comment = Comments.objects.get(id=self.kwargs.get('pk'))
+        print(comment.owner.username)
+        if has_object_permission(request, comment):
+            return self.update(request, *args, **kwargs)
+        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+
+    def delete(self, request, *args, **kwargs):
+        comment = Comments.objects.get(id=self.kwargs.get('pk'))
+        print(comment.owner.username)
+        if has_object_permission(request, comment):
+            return self.destroy(request, *args, **kwargs)
+        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
