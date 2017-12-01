@@ -101,7 +101,7 @@ REST_FRAMEWORK = {
     #'DEFAULT_MODEL_SERIALIZER_CLASS': 'drf_hal_json.serializers.HalModelSerializer',
     #'DEFAULT_PAGINATION_SERIALIZER_CLASS': 'drf_hal_json.serializers.HalPaginationSerializer',
     #'DEFAULT_PAGINATION_CLASS': 'drf_hal_json.pagination.HalPageNumberPagination',
-	#'DEFAULT_PARSER_CLASSES': ('drf_hal_json.parsers.JsonHalParser',),
+    #'DEFAULT_PARSER_CLASSES': ('drf_hal_json.parsers.JsonHalParser',),
 	#'DEFAULT_RENDERER_CLASSES': ('drf_hal_json.renderers.JsonHalRenderer',),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',

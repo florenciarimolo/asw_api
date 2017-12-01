@@ -27,7 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('url', 'username', 'first_name', 'last_name', 'image_url')
 
 
-class CommentsSerializer(HalModelSerializer, NestedFieldsSerializerMixin):
+class CommentSerializer(HalModelSerializer):
     url = serializers.SerializerMethodField()
     owner = serializers.ReadOnlyField(source='owner.username')
     issue = serializers.ReadOnlyField(source='issue.id')
@@ -43,9 +43,9 @@ class CommentsSerializer(HalModelSerializer, NestedFieldsSerializerMixin):
         fields = '__all__'
 
 
-class IssuesSerializer(HalModelSerializer, NestedFieldsSerializerMixin):
+class IssueSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
-    comments = CommentsSerializer(many=True, read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
     owner = serializers.ReadOnlyField(source='owner.username')
 
     def get_url(self, obj):
@@ -58,12 +58,12 @@ class IssuesSerializer(HalModelSerializer, NestedFieldsSerializerMixin):
         model = Issues
         fields = ('url', 'comments', 'owner')#'__all__'
         nested_fields = {
-        'comments': (
-            ['comment'],
-            {
-                'user': (
-                    ['username']
+            'comments': (
+                ['comment'],
+                {
+                    'user': (
+                        ['username']
+                    )
+                }
             )
-            }
-        )
         }

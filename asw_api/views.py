@@ -16,12 +16,6 @@ from rest_extensions import generics as genericsx
 from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer
 from asw_api.models import Issues, Comments
 
-
-from asw_api.models import *
-from asw_api.serializers import *
-from rest_framework import generics, viewsets
-from rest_framework import views
-from django.shortcuts import render
 from drf_hal_json.views import HalCreateModelMixin
 
 FORBIDDEN_MESSAGE = {'details': 'You don\'t have permission to do this action using the credentials you supplied.'}
@@ -61,7 +55,7 @@ class UserDetail(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class IssuesList(HalCreateModelMixin, generics.ListCreateAPIView):
+class IssuesList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = Issues.objects.all()
     serializer_class = IssueSerializer
