@@ -27,8 +27,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('url', 'username', 'first_name', 'last_name', 'image_url')
 
 
-class CommentSerializer(HalModelSerializer):
-    url = serializers.SerializerMethodField()
+class CommentSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()#HyperlinkedIdentityField(view_name='snippets:comments-detail', lookup_field='pk',)
     owner = serializers.ReadOnlyField(source='owner.username')
     issue = serializers.ReadOnlyField(source='issue.id')
 
@@ -36,34 +36,35 @@ class CommentSerializer(HalModelSerializer):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
         kwargs = {'pk': obj.id, 'issue_id': obj.issue_id}
-        return reverse('comment-detail', request=request, format=format, kwargs=kwargs)
+        return reverse('comments-detail', request=request, format=format, kwargs=kwargs)
 
     class Meta:
         model = Comments
-        fields = '__all__'
+        fields = '__all__' #('comment', 'owner', 'issue')
 
 
-class IssueSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
-    comments = CommentSerializer(many=True, read_only=True)
-    owner = serializers.ReadOnlyField(source='owner.username')
+class IssueSerializer(HalModelSerializer):#, NestedFieldsSerializerMixin, serializers.ModelSerializer):
+    #url = serializers.SerializerMethodField()#HyperlinkedIdentityField(view_name='snippets:issues-detail', lookup_field='pk',)
+    #comments = CommentsSerializer(many=True, read_only=True)
+    owner = serializers.HyperlinkedIdentityField(view_name='user-detail')#ReadOnlyField(source='owner.username')
+    #comments = 'comments-list'
 
     def get_url(self, obj):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
         kwargs = {'pk': obj.id}
-        return reverse('issue-detail', request=request, format=format, kwargs=kwargs)
+        return reverse('issues-detail', request=request, format=format, kwargs=kwargs)
 
     class Meta:
         model = Issues
-        fields = ('url', 'comments', 'owner')#'__all__'
-        nested_fields = {
-            'comments': (
-                ['comment'],
-                {
-                    'user': (
-                        ['username']
-                    )
-                }
-            )
-        }
+        fields = ('title', 'kind', 'priority', 'status', 'votes', 'assignee', 'owner')#, 'comments') #'__all__'
+        #nested_fields = {
+        #'comments': (
+        #        ['comment'],
+        #        {
+        #            'owner': (
+        #                ['url', 'owner']
+        #        )
+        #        }
+        #)
+        #}

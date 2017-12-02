@@ -55,7 +55,7 @@ class UserDetail(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class IssuesList(generics.ListCreateAPIView):
+class IssuesList(HalCreateModelMixin, generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = Issues.objects.all()
     serializer_class = IssueSerializer
@@ -64,7 +64,7 @@ class IssuesList(generics.ListCreateAPIView):
         serializer.save(owner=self.request.user)
 
 
-class IssueDetail(genericsx.RetrieveUpdateDestroyAPIView):
+class IssueDetail(HalCreateModelMixin, genericsx.RetrieveUpdateDestroyAPIView):
     queryset = Issues.objects.all()
     serializer_class = IssueSerializer
 
@@ -83,7 +83,7 @@ class IssueDetail(genericsx.RetrieveUpdateDestroyAPIView):
         return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
 
 
-class CommentsList(generics.ListCreateAPIView):
+class CommentsList(HalCreateModelMixin, generics.ListCreateAPIView):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
@@ -96,7 +96,7 @@ class CommentsList(generics.ListCreateAPIView):
         serializer.save(owner=self.request.user, issue=issue)
 
 
-class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
+class CommentDetail(HalCreateModelMixin, genericsx.RetrieveUpdateDestroyAPIView):
     queryset = Comments.objects.all()
     serializer_class = CommentSerializer
 
