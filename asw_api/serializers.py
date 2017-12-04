@@ -31,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('url', 'username', 'first_name', 'last_name', 'image_url')
 
 
-class CommentSerializer(serializers.ModelSerializer):
+class CommentSerializer(HalModelSerializer, serializers.ModelSerializer):
     url = serializers.SerializerMethodField()#HyperlinkedIdentityField(view_name='snippets:comments-detail', lookup_field='pk',)
     owner = serializers.ReadOnlyField(source='owner.username')
     issue = serializers.ReadOnlyField(source='issue.id')
@@ -49,9 +49,10 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class IssueSerializer(HalModelSerializer):#, NestedFieldsSerializerMixin, serializers.ModelSerializer):
     #url = serializers.SerializerMethodField()#HyperlinkedIdentityField(view_name='snippets:issues-detail', lookup_field='pk',)
-    #comments = CommentsSerializer(many=True, read_only=True)
+    #comments = CommentSerializer(many=True, read_only=True)
     owner = serializers.HyperlinkedIdentityField(view_name='user-detail')#ReadOnlyField(source='owner.username')
     #comments = 'comments-list'
+    url_comments = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         request = self.context.get('request', None)
@@ -59,16 +60,22 @@ class IssueSerializer(HalModelSerializer):#, NestedFieldsSerializerMixin, serial
         kwargs = {'pk': obj.id}
         return reverse('issues-detail', request=request, format=format, kwargs=kwargs)
 
+    def get_url_comments(self, obj):
+        request = self.context.get('request', None)
+        format = self.context.get('format', None)
+        kwargs = {'pk': obj.id }
+        return reverse('comments-list', request=request, format=format, kwargs=kwargs)
+
     class Meta:
         model = Issues
-        fields = ('title', 'kind', 'priority', 'status', 'votes', 'assignee', 'owner')#, 'comments') #'__all__'
-        #nested_fields = {
-        #'comments': (
-        #        ['comment'],
-        #        {
-        #            'owner': (
-        #                ['url', 'owner']
-        #        )
-        #        }
-        #)
-        #}
+        fields = ('title', 'kind', 'priority', 'status', 'votes', 'assignee', 'owner', 'comments', 'url_comments') #'__all__'
+        nested_fields = {
+        'comments': (
+                ['comment'],
+                {
+                    'owner': (
+                        ['url', 'username']
+                )
+                }
+        )
+        }
