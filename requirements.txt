@@ -2,3 +2,5 @@ django
 djangorestframework
 django-filter
 django-allauth
+gunicorn
+whitenoise
