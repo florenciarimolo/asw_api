@@ -13,7 +13,11 @@ class UserSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
 
     def get_image_url(self, obj):
-        imge_url = obj.socialaccount_set.filter(provider='twitter')[0].extra_data['profile_image_url']
+        imge_url = ''
+        try:
+            imge_url = obj.socialaccount_set.filter(provider='twitter')[0].extra_data['profile_image_url']
+        except:
+            pass
         return imge_url
 
     def get_url(self, obj):
