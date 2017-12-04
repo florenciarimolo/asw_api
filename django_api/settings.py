@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'random_secret_key'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG')
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'asw-api.herokuapp.com']
 
@@ -116,14 +116,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    },
-    'heroku': {
-        ''
     }
 }
-
-DATABASES['heroku'] = dj_database_url.config()
-DATABASES['heroku']['CONN_MAX_AGE'] = 500
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
