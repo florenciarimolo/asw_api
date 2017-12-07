@@ -8,3 +8,4 @@ dj_database_url
 psycopg2==2.7
 drf-nested-fields
 drf-hal-json
+django-cors-headers
