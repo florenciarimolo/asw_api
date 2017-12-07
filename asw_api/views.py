@@ -13,16 +13,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_extensions import generics as genericsx
-from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer
-from asw_api.models import Issues, Comments
+from rest_framework.parsers import FormParser, MultiPartParser
+from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, FileUploadSerializer
+from asw_api.models import Issues, Comments, FileUploads
 
 FORBIDDEN_MESSAGE = {'details': 'You don\'t have permission to do this action using the credentials you supplied.'}
 
 
 def has_update_or_destroy_object_permission(request, obj):
-
     if request.user.is_authenticated:
-
         print(obj.owner.username)
         return obj.owner.username == request.user.username
 
@@ -114,3 +113,38 @@ class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
         if has_update_or_destroy_object_permission(request, comment):
             return self.destroy(request, *args, **kwargs)
         return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+
+
+class FileUploadsList(generics.ListCreateAPIView):
+    queryset = FileUploads.objects.all()
+    serializer_class = FileUploadSerializer
+    parser_classes = (MultiPartParser, FormParser,)
+
+    def get_queryset(self):
+        issue_id = self.kwargs.get('pk')
+        return FileUploads.objects.filter(issue=issue_id)
+
+    def perform_create(self, serializer):
+        issue_id = self.kwargs.get('pk')
+        issue = Issues.objects.filter(id=issue_id)[0]
+        serializer.save(owner=self.request.user,
+                        datafile=self.request.data.get('datafile'),
+                        issue=issue)
+
+
+class FileUploadDetail(genericsx.RetrieveUpdateDestroyAPIView):
+    queryset = FileUploads.objects.all()
+    serializer_class = FileUploadSerializer
+
+    def put(self, request, *args, **kwargs):
+        fileUpload = FileUploads.objects.get(id=self.kwargs.get('pk'))
+        if has_update_or_destroy_object_permission(request, fileUpload):
+            return self.update(request, *args, **kwargs)
+        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+
+    def delete(self, request, *args, **kwargs):
+        fileUpload = FileUploads.objects.get(id=self.kwargs.get('pk'))
+        if has_update_or_destroy_object_permission(request, fileUpload):
+            return self.destroy(request, *args, **kwargs)
+        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+

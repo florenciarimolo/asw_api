@@ -28,6 +28,13 @@ class Comments(models.Model):
     issue = models.ForeignKey(Issues, related_name='comments', to_field='id')
 
 
+class FileUploads(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey(User, to_field='username')
+    issue = models.ForeignKey(Issues, to_field='id')
+    datafile = models.FileField()
+
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
