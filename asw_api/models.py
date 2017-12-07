@@ -28,10 +28,10 @@ class Comments(models.Model):
     issue = models.ForeignKey(Issues, related_name='comments', to_field='id')
 
 
-class FileUploads(models.Model):
+class Attachment(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, to_field='username')
-    issue = models.ForeignKey(Issues, to_field='id')
+    issue = models.ForeignKey(Issues, related_name='attachments', to_field='id')
     datafile = models.FileField()
 
 

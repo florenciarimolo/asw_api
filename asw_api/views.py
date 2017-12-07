@@ -14,8 +14,8 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_extensions import generics as genericsx
 from rest_framework.parsers import FormParser, MultiPartParser
-from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, FileUploadSerializer
-from asw_api.models import Issues, Comments, FileUploads
+from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, AttachmentSerializer
+from asw_api.models import Issues, Comments, Attachment
 
 FORBIDDEN_MESSAGE = {'details': 'You don\'t have permission to do this action using the credentials you supplied.'}
 
@@ -115,14 +115,14 @@ class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
         return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
 
 
-class FileUploadsList(generics.ListCreateAPIView):
-    queryset = FileUploads.objects.all()
-    serializer_class = FileUploadSerializer
+class AttachmentList(generics.ListCreateAPIView):
+    queryset = Attachment.objects.all()
+    serializer_class = AttachmentSerializer
     parser_classes = (MultiPartParser, FormParser,)
 
     def get_queryset(self):
         issue_id = self.kwargs.get('pk')
-        return FileUploads.objects.filter(issue=issue_id)
+        return Attachment.objects.filter(issue=issue_id)
 
     def perform_create(self, serializer):
         issue_id = self.kwargs.get('pk')
@@ -132,19 +132,19 @@ class FileUploadsList(generics.ListCreateAPIView):
                         issue=issue)
 
 
-class FileUploadDetail(genericsx.RetrieveUpdateDestroyAPIView):
-    queryset = FileUploads.objects.all()
-    serializer_class = FileUploadSerializer
+class AttachmentDetail(genericsx.RetrieveUpdateDestroyAPIView):
+    queryset = Attachment.objects.all()
+    serializer_class = AttachmentSerializer
 
     def put(self, request, *args, **kwargs):
-        fileUpload = FileUploads.objects.get(id=self.kwargs.get('pk'))
-        if has_update_or_destroy_object_permission(request, fileUpload):
+        attachment = Attachment.objects.get(id=self.kwargs.get('pk'))
+        if has_update_or_destroy_object_permission(request, attachment):
             return self.update(request, *args, **kwargs)
         return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
 
     def delete(self, request, *args, **kwargs):
-        fileUpload = FileUploads.objects.get(id=self.kwargs.get('pk'))
-        if has_update_or_destroy_object_permission(request, fileUpload):
+        attachment = Attachment.objects.get(id=self.kwargs.get('pk'))
+        if has_update_or_destroy_object_permission(request, attachment):
             return self.destroy(request, *args, **kwargs)
         return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
 
