@@ -13,8 +13,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_extensions import generics as genericsx
-from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer
-from asw_api.models import Issues, Comments
+from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, IssuesVotesSerializer
+from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches
 
 FORBIDDEN_MESSAGE = {'details': 'You don\'t have permission to do this action using the credentials you supplied.'}
 
@@ -109,3 +109,20 @@ class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
         if has_update_or_destroy_object_permission(request, comment):
             return self.destroy(request, *args, **kwargs)
         return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+
+
+class IssueVotesList(generics.ListAPIView):
+    serializer_class = IssuesVotesSerializer
+    def get_queryset(self):
+        issue_id = self.request.GET['issue_id']
+        username = self.request.GET['username']
+        print(issue_id)
+        print(username)
+        return IssuesVotes.objects.get(issue_id=issue_id, username=username)
+
+
+class IssuesVotesList(generics.ListCreateAPIView):
+    serializer_class = IssuesVotesSerializer
+    def get_queryset(self):
+        return IssuesVotes.objects.all()
+

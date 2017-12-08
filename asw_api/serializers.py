@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from asw_api.models import Issues, Comments
+from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches
 from django.contrib.auth.models import User
 
 
@@ -53,4 +53,24 @@ class IssueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Issues
+        fields = '__all__'
+
+class IssueVotesSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        return reverse('issue_votes-list')
+
+    class Meta:
+        model = IssuesVotes
+        fields = '__all__'
+
+class IssuesVotesSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        return reverse('issues_votes-list')
+
+    class Meta:
+        model = IssuesVotes
         fields = '__all__'
