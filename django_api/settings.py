@@ -193,3 +193,5 @@ SWAGGER_SETTINGS = {
 SHOW_REQUEST_HEADERS = True
 
 SUPPORTED_SUBMIT_METHODS = ['get', 'post', 'put', 'delete', ]
+
+VALIDATOR_URL = None
