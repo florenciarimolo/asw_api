@@ -30,7 +30,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'asw-api.herokuapp.com']
 
 # Application definition
 
-API_BASE_URL = '/api'
+API_BASE_URL = 'v1/'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
