@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     # Login via Twitter
     'allauth.socialaccount.providers.twitter',
+    'corsheaders',
 ]
 
 SITE_ID = 1
@@ -57,6 +58,8 @@ LOGIN_REDIRECT_URL = API_BASE_URL
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -68,6 +71,8 @@ MIDDLEWARE = [
     # https://warehouse.python.org/project/whitenoise/
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'django_api.urls'
 
