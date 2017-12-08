@@ -5,25 +5,21 @@ from collections import OrderedDict
 
 from django.contrib.auth.models import User
 from django.db import OperationalError
+from django.http import Http404, HttpResponseForbidden
 from rest_framework import generics
-from rest_framework import status
 from rest_framework import views
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_extensions import generics as genericsx
-from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer
-from asw_api.models import Issues, Comments
 
-FORBIDDEN_MESSAGE = {'details': 'You don\'t have permission to do this action using the credentials you supplied.'}
+from asw_api.models import Issues, Comments
+from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer
+from rest_extensions import generics as genericsx
 
 
 def has_update_or_destroy_object_permission(request, obj):
-
     if request.user.is_authenticated:
-
-        print(obj.owner.username)
         return obj.owner.username == request.user.username
 
     token = request.META['HTTP_AUTHORIZATION'].replace('Token ', '')
@@ -52,10 +48,14 @@ class UsersList(generics.ListAPIView):
 
 class UserDetail(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
-        kwargs = self.kwargs.get('username')
-        user = User.objects.filter(username=kwargs)[0]
-        serializer = UserSerializer(user, many=False)
-        return Response(serializer.data)
+        username = self.kwargs.get('username')
+        try:
+            user = User.objects.get(username=username)
+            serializer = UserSerializer(user, many=False)
+            response = serializer.data
+            return Response(response, )
+        except User.DoesNotExist:
+            raise Http404
 
 
 class IssuesList(generics.ListCreateAPIView):
@@ -76,14 +76,14 @@ class IssueDetail(genericsx.RetrieveUpdateDestroyAPIView):
         print(issue.owner.username)
         if has_update_or_destroy_object_permission(request, issue):
             return self.update(request, *args, **kwargs)
-        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+        raise HttpResponseForbidden
 
     def delete(self, request, *args, **kwargs):
         issue = Issues.objects.get(id=self.kwargs.get('pk'))
         print(issue.owner.username)
         if has_update_or_destroy_object_permission(request, issue):
             return self.destroy(request, *args, **kwargs)
-        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+        raise HttpResponseForbidden
 
 
 class CommentsList(generics.ListCreateAPIView):
@@ -107,10 +107,10 @@ class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
         comment = Comments.objects.get(id=self.kwargs.get('pk'))
         if has_update_or_destroy_object_permission(request, comment):
             return self.update(request, *args, **kwargs)
-        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+        raise HttpResponseForbidden
 
     def delete(self, request, *args, **kwargs):
         comment = Comments.objects.get(id=self.kwargs.get('pk'))
         if has_update_or_destroy_object_permission(request, comment):
             return self.destroy(request, *args, **kwargs)
-        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+        raise HttpResponseForbidden

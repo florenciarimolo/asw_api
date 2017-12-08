@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 
 from asw_api.models import Issues, Comments
@@ -7,6 +8,7 @@ from django.contrib.auth.models import User
 class UserSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
     image_url = serializers.SerializerMethodField()
+    token = serializers.SerializerMethodField()
 
     def get_image_url(self, obj):
         imge_url = ''
@@ -22,9 +24,18 @@ class UserSerializer(serializers.ModelSerializer):
         kwargs = {'username': obj.username}
         return reverse('user-detail', request=request, format=format, kwargs=kwargs)
 
+    def get_token(self, obj):
+        request = self.context.get('request', None)
+        format = self.context.get('format', None)
+        data = None
+        if request.user and request.user.username == obj.username:
+            user_id = obj.id
+            data = Token.objects.get(user_id=user_id).key
+        return data
+
     class Meta:
         model = User
-        fields = ('url', 'username', 'first_name', 'last_name', 'image_url')
+        fields = ('url', 'username', 'first_name', 'last_name', 'image_url', 'token')
 
 
 class CommentSerializer(serializers.ModelSerializer):
