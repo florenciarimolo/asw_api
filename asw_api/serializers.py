@@ -21,7 +21,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_href(self, obj):
         request = self.context.get('request', None)
-        print (request)
         format = self.context.get('format', None)
         kwargs = {'username': obj.username}
         return reverse('user-detail', request=request, format=format, kwargs=kwargs)

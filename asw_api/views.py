@@ -51,7 +51,6 @@ class UserDetail(generics.ListAPIView):
 
     def get_queryset(self):
         username = self.kwargs.get('username')
-        print(username)
         return User.objects.filter(username=username)
 
 
