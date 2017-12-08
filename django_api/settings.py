@@ -50,6 +50,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     # Login via Twitter
     'allauth.socialaccount.providers.twitter',
+    # Swagger
+    'rest_framework_swagger',
+    # CORS
     'corsheaders',
 ]
 
@@ -172,3 +175,21 @@ STATIC_URL = '/static/'
 # https://warehouse.python.org/project/whitenoise/
 
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+# URL config for Swagger
+LOGIN_URL = '/accounts/twitter/login'
+LOGOUT_URL = '/accounts/logout'
+
+SWAGGER_SETTINGS = {
+    'SECCURITY_DEFINITIONS': {
+        "basic": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+}
+
+SHOW_REQUEST_HEADERS = True
+
+SUPPORTED_SUBMIT_METHODS = ['get', 'post', 'put', 'delete', ]

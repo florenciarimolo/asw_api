@@ -16,15 +16,17 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
+from rest_framework_swagger.views import get_swagger_view
 
 from asw_api import views
 from .views import *
 from django.contrib.auth.views import logout
+schema_view = get_swagger_view(title='Issue Tracker API')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/logout/$', logout, {'next_page': '/'}),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^api/', include('asw_api.urls')),
-    url(r'^$', IndexView, name='home'),
+    url(r'^$', schema_view),
 ]
