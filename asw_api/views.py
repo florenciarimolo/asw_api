@@ -47,15 +47,12 @@ class UsersList(generics.ListAPIView):
 
 
 class UserDetail(generics.ListAPIView):
-    def get(self, request, *args, **kwargs):
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
         username = self.kwargs.get('username')
-        try:
-            user = User.objects.get(username=username)
-            serializer = UserSerializer(user, many=False)
-            response = serializer.data
-            return Response(response, )
-        except User.DoesNotExist:
-            raise Http404
+        print(username)
+        return User.objects.filter(username=username)
 
 
 class IssuesList(generics.ListCreateAPIView):

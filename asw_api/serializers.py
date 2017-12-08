@@ -5,8 +5,9 @@ from rest_framework.reverse import reverse
 from asw_api.models import Issues, Comments
 from django.contrib.auth.models import User
 
+
 class UserSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
+    href = serializers.SerializerMethodField()
     image_url = serializers.SerializerMethodField()
     token = serializers.SerializerMethodField()
 
@@ -18,8 +19,9 @@ class UserSerializer(serializers.ModelSerializer):
             pass
         return imge_url
 
-    def get_url(self, obj):
+    def get_href(self, obj):
         request = self.context.get('request', None)
+        print (request)
         format = self.context.get('format', None)
         kwargs = {'username': obj.username}
         return reverse('user-detail', request=request, format=format, kwargs=kwargs)
@@ -28,21 +30,21 @@ class UserSerializer(serializers.ModelSerializer):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
         data = None
-        if request.user and request.user.username == obj.username:
+        if request is not None and request.user and request.user.username == obj.username:
             user_id = obj.id
             data = Token.objects.get(user_id=user_id).key
         return data
 
     class Meta:
         model = User
-        fields = ('url', 'username', 'first_name', 'last_name', 'image_url', 'token')
+        fields = ('href', 'username', 'first_name', 'last_name', 'image_url', 'token')
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
+    href = serializers.SerializerMethodField()
     _links = serializers.SerializerMethodField()
 
-    def get_url(self, obj):
+    def get_href(self, obj):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
         kwargs = {'pk': obj.id, 'issue_id': obj.issue_id}
@@ -62,15 +64,15 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comments
-        fields = ('url', 'comment', '_links')
+        fields = ('href', 'comment', '_links')
 
 
 class IssueSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
+    href = serializers.SerializerMethodField()
     comments = CommentSerializer(many=True, read_only=True)
     _links = serializers.SerializerMethodField()
 
-    def get_url(self, obj):
+    def get_href(self, obj):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
         kwargs = {'pk': obj.id}
@@ -90,4 +92,4 @@ class IssueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Issues
-        fields = ('url', 'title', 'kind', 'priority', 'status', 'votes', 'assignee', '_links', 'comments')
+        fields = ('href', 'title', 'kind', 'priority', 'status', 'votes', 'assignee', '_links', 'comments')
