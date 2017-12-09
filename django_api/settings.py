@@ -188,6 +188,7 @@ SWAGGER_SETTINGS = {
             "in": "header"
         }
     },
+    'JSON_EDITOR': True,
 }
 
 SHOW_REQUEST_HEADERS = True

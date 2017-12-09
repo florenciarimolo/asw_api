@@ -1,8 +1,8 @@
 swagger: '2.0'
 info:
-  title: Issue Tracker API
-  description: ''
-  version: ''
+  title: 'Issue Tracker API'
+  description: 'Swagger page form for all methods in the Issue Tracker API'
+  version: 'v1'
 host: asw-api.herokuapp.com
 schemes:
   - https
@@ -21,7 +21,7 @@ paths:
         - APIKeyHeader: []
       responses:
         '200':
-          description: ''
+          description: 'Base URL Page. This method shows a view whit Users and Issues.'
   /v1/issues/:
     get:
       operationId: issues_list
@@ -32,17 +32,17 @@ paths:
       parameters:
         - type: integer
           name: limit
-          description: Number of results to return per page.
+          description: 'Number of results to return per page.'
           in: query
           required: false
         - type: integer
           name: offset
-          description: The initial index from which to return the results.
+          description: 'The initial index from which to return the results.'
           in: query
           required: false
       responses:
         '200':
-          description: ''
+          description: 'GET method for all issues.'
     post:
       operationId: issues_create
       tags:
@@ -58,22 +58,22 @@ paths:
             properties:
               kind:
                 type: string
-                description: ''
+                description: 'Issue kind.'
               priority:
                 type: string
-                description: ''
+                description: 'Issue priority.'
               assignee:
                 type: string
-                description: ''
+                description: 'User issue assignee.'
               title:
                 type: string
-                description: ''
+                description: 'Issue title.'
               votes:
                 type: integer
-                description: ''
+                description: 'Issue votes (it is irrelevant). Votes are stored on the db.'
               status:
                 type: string
-                description: ''
+                description: 'Issue status.'
             required:
               - title
               - kind
@@ -81,7 +81,50 @@ paths:
           in: body
       responses:
         '201':
-          description: ''
+          description: 'POST method for an Issue.'
+  '/v1/issues/votes/':
+    get:
+      operationId: issues_votes_get
+      tags:
+        - v1
+      security:
+        - APIKeyHeader: []
+      parameters:
+        - type: integer
+          name: limit
+          description: 'Number of results to return per page.'
+          in: query
+          required: false
+        - type: integer
+          name: offset
+          description: 'The initial index from which to return the results.'
+          in: query
+          required: false
+      responses:
+        '200':
+          description: 'GET method for all votes.'
+    post:
+      operationId: issues_votes_post
+      tags:
+        - v1
+      security:
+        - APIKeyHeader: []
+      consumes:
+        - application/json
+      parameters:
+        - type: integer
+          name: limit
+          description: 'Number of results to return per page.'
+          in: query
+          required: false
+        - type: integer
+          name: offset
+          description: 'The initial index from which to return the results.'
+          in: query
+          required: false
+      responses:
+        '201':
+          description: 'POST method for a vote.'
   '/v1/issues/{id}/':
     get:
       operationId: issues_read
@@ -92,12 +135,12 @@ paths:
       parameters:
         - type: integer
           name: id
-          description: A unique integer value identifying this issues.
+          description: 'A unique integer value identifying this issues.'
           in: path
           required: true
       responses:
         '200':
-          description: ''
+          description: 'GET method for an specific issue.'
     put:
       operationId: issues_update
       tags:
@@ -109,7 +152,7 @@ paths:
       parameters:
         - type: integer
           name: id
-          description: A unique integer value identifying this issues.
+          description: 'A unique integer value identifying this issues.'
           in: path
           required: true
         - name: data
@@ -118,22 +161,22 @@ paths:
             properties:
               kind:
                 type: string
-                description: ''
+                description: 'Issue kind.'
               priority:
                 type: string
-                description: ''
+                description: 'Issue priority.'
               assignee:
                 type: string
-                description: ''
+                description: 'User issue assignee.'
               title:
                 type: string
-                description: ''
+                description: 'Issue title.'
               votes:
                 type: integer
-                description: ''
+                description: 'Issue votes (it is irrelevant). Votes are stored on the db.'
               status:
                 type: string
-                description: ''
+                description: 'Issue status.'
             required:
               - title
               - kind
@@ -141,7 +184,7 @@ paths:
           in: body
       responses:
         '200':
-          description: ''
+          description: 'PUT method to update an specific issue.'
     delete:
       operationId: issues_delete
       tags:
@@ -156,7 +199,7 @@ paths:
           required: true
       responses:
         '204':
-          description: ''
+          description: 'DELETE method for an specific issue.'
   '/v1/issues/{id}/comments/':
     get:
       operationId: issues_comments_list
@@ -167,22 +210,22 @@ paths:
       parameters:
         - type: string
           name: id
-          description: ''
+          description: 'ID of the comments issue.'
           in: path
           required: true
         - type: integer
           name: limit
-          description: Number of results to return per page.
+          description: 'Number of results to return per page.'
           in: query
           required: false
         - type: integer
           name: offset
-          description: The initial index from which to return the results.
+          description: 'The initial index from which to return the results.'
           in: query
           required: false
       responses:
         '200':
-          description: ''
+          description: 'GET method for all comments on a issue.'
     post:
       operationId: issues_comments_create
       tags:
@@ -194,7 +237,7 @@ paths:
       parameters:
         - type: string
           name: id
-          description: ''
+          description: 'ID of the comments issue.'
           in: path
           required: true
         - name: data
@@ -203,13 +246,80 @@ paths:
             properties:
               comment:
                 type: string
-                description: ''
+                description: 'Data of creation or last editing.'
             required:
               - comment
           in: body
       responses:
         '201':
-          description: ''
+          description: 'POST method for update'
+  '/v1/issues/{id}/votes/':
+    get:
+      operationId: issue_votes_get
+      tags:
+        - v1
+      security:
+        - APIKeyHeader: []
+      parameters:
+        - type: integer
+          name: id
+          description: 'A unique integer value identifying this issues.'
+          in: path
+          required: true
+        - type: integer
+          name: limit
+          description: 'Number of results to return per page.'
+          in: query
+          required: false
+        - type: integer
+          name: offset
+          description: 'The initial index from which to return the results.'
+          in: query
+          required: false
+      responses:
+        '200':
+          description: 'GET method for all votes of an specific issue.'
+  '/v1/issues/{id}/votes/{username}':
+    get:
+      operationId: issue_get_vote
+      tags:
+        - v1
+      security:
+        - APIKeyHeader: []
+      parameters:
+        - type: integer
+          name: id
+          description: 'A unique integer value identifying this issues.'
+          in: path
+          required: true
+        - type: string
+          name: username
+          description: 'User name of an specific User.'
+          in: path
+          required: true
+      responses:
+        '200':
+          description: 'GET method for an specific issue vote.'
+    delete:
+      operationId: issue_delete_vote
+      tags:
+        - v1
+      security:
+        - APIKeyHeader: []
+      parameters:
+        - type: integer
+          name: id
+          description: 'A unique integer value identifying this issues.'
+          in: path
+          required: true
+        - type: string
+          name: username
+          description: 'User name of an specific User.'
+          in: path
+          required: true
+      responses:
+        '204':
+          description: 'DELETE method for an specific issue vote.'
   '/v1/issues/{issue_id}/comments/{id}':
     get:
       operationId: issues_comments_read
@@ -220,17 +330,17 @@ paths:
       parameters:
         - type: string
           name: issue_id
-          description: ''
+          description: 'Issue ID of the comment.'
           in: path
           required: true
         - type: integer
           name: id
-          description: A unique integer value identifying this comments.
+          description: 'A unique integer value identifying this comments.'
           in: path
           required: true
       responses:
         '200':
-          description: ''
+          description: 'GET method for an specific comment on an issue.'
     put:
       operationId: issues_comments_update
       tags:
@@ -242,7 +352,7 @@ paths:
       parameters:
         - type: string
           name: issue_id
-          description: ''
+          description: 'ID of the comments issue.'
           in: path
           required: true
         - type: integer
@@ -256,13 +366,13 @@ paths:
             properties:
               comment:
                 type: string
-                description: ''
+                description: 'Data of creation or last editing.'
             required:
               - comment
           in: body
       responses:
         '200':
-          description: ''
+          description: 'PUT method to update an specific issue comment.'
     delete:
       operationId: issues_comments_delete
       tags:
@@ -272,17 +382,17 @@ paths:
       parameters:
         - type: string
           name: issue_id
-          description: ''
+          description: 'Issue ID of the comment.'
           in: path
           required: true
         - type: integer
           name: id
-          description: A unique integer value identifying this comments.
+          description: 'A unique integer value identifying this comments.'
           in: path
           required: true
       responses:
         '204':
-          description: ''
+          description: 'DELETE comment method.'
   /v1/users/:
     get:
       operationId: users_list
@@ -293,17 +403,38 @@ paths:
       parameters:
         - type: integer
           name: limit
-          description: Number of results to return per page.
+          description: 'Number of results to return per page.'
           in: query
           required: false
         - type: integer
           name: offset
-          description: The initial index from which to return the results.
+          description: 'The initial index from which to return the results.'
           in: query
           required: false
       responses:
         '200':
-          description: ''
+          description: 'GET method for all users.'
+  '/v1/users/watches':
+    get:
+      operationId: users_read
+      tags:
+        - v1
+      security:
+        - APIKeyHeader: []
+      parameters:
+        - type: integer
+          name: limit
+          description: 'Number of results to return per page.'
+          in: query
+          required: false
+        - type: integer
+          name: offset
+          description: 'The initial index from which to return the results.'
+          in: query
+          required: false
+      responses:
+        '200':
+          description: 'GET method for all watches of all users. It has no real use.'
   '/v1/users/{username}':
     get:
       operationId: users_read
@@ -314,9 +445,83 @@ paths:
       parameters:
         - type: string
           name: username
-          description: ''
+          description: 'User name of an specific User.'
           in: path
           required: true
       responses:
         '200':
-          description: ''
+          description: 'GET method for an specific User.'
+  '/v1/users/{username}/watches/':
+    get:
+      operationId: user_watches_list
+      tags:
+        - v1
+      security:
+        - APIKeyHeader: []
+      parameters:
+        - type: string
+          name: username
+          description: 'User name of an specific User.'
+          in: path
+          required: true
+      responses:
+        '200':
+          description: 'GET method for all watches of an user.'
+    post:
+      operationId: user_watch_post
+      tags:
+        - v1
+      security:
+        - APIKeyHeader: []
+      consumes:
+        - application/json
+      parameters:
+        - type: string
+          name: username
+          description: 'User name of an specific User.'
+          in: path
+          required: true
+      responses:
+        '201':
+          description: 'POST method for an user watch.'
+  '/v1/users/{username}/watches/{id}':
+    get:
+      operationId: issue_get_vote
+      tags:
+        - v1
+      security:
+        - APIKeyHeader: []
+      parameters:
+        - type: string
+          name: username
+          description: 'User name of an specific User.'
+          in: path
+          required: true
+        - type: integer
+          name: id
+          description: 'A unique integer value identifying this issues.'
+          in: path
+          required: true
+      responses:
+        '200':
+          description: 'GET method for an specific user watch.'
+    delete:
+      operationId: issue_delete_vote
+      tags:
+        - v1
+      security:
+        - APIKeyHeader: []
+      parameters:
+        - type: string
+          name: username
+          description: 'User name of an specific User.'
+          in: path
+          required: true
+        - type: integer
+          name: id
+          description: 'A unique integer value identifying this issues.'
+          in: path
+          required: true
+      responses:
+        '204':
+          description: 'DELETE method for an specific user watch.'
