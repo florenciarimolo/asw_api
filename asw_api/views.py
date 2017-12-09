@@ -60,7 +60,7 @@ class IssuesList(generics.ListCreateAPIView):
     serializer_class = IssueSerializer
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(owner=self.request.user, status='New')
 
 
 class IssueDetail(genericsx.RetrieveUpdateDestroyAPIView):

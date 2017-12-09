@@ -16,7 +16,7 @@ class Issues(models.Model):
     title = models.TextField()
     kind = models.CharField(max_length=11)
     priority = models.CharField(max_length=8)
-    status = models.TextField(default='New', blank=True)
+    status = models.TextField(blank=True) #default='New'
     votes = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(1)], blank=True)
     assignee = models.ForeignKey(User, related_name='assignee', to_field='username', null=True)
     owner = models.ForeignKey(User, related_name='owner', to_field='username', null=True)
@@ -32,3 +32,4 @@ class Comments(models.Model):
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
