@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 
-from asw_api.models import Issues, Comments
+from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches
 from django.contrib.auth.models import User
 
 
@@ -92,3 +92,67 @@ class IssueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Issues
         fields = ('href', 'title', 'kind', 'priority', 'status', 'votes', 'assignee', '_links', 'comments')
+
+class VoteSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        kwargs = {'pk': obj.id, 'username': obj.username}
+        return reverse('vote-list', kwargs=kwargs)
+
+    class Meta:
+        model = IssuesVotes
+        fields = '__all__'
+
+class IssueVotesSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        kwargs = {'pk': obj.id}
+        return reverse('issue_votes-list', kwargs=kwargs)
+
+    class Meta:
+        model = IssuesVotes
+        fields = '__all__'
+
+class IssuesVotesSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        return reverse('issues_votes-list')
+
+    class Meta:
+        model = IssuesVotes
+        fields = '__all__'
+
+class WatchSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        kwargs = {'username': obj.username, 'pk': obj.id}
+        return reverse('watch-list', kwargs=kwargs)
+
+    class Meta:
+        model = IssuesWaches
+        fields = '__all__'
+
+class UserWatchesSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        kwargs = {'username': obj.username}
+        return reverse('user_watches-list', kwargs=kwargs)
+
+    class Meta:
+        model = IssuesWaches
+        fields = '__all__'
+
+class IssuesWatchSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        return reverse('issues_watch-list')
+
+    class Meta:
+        model = IssuesWaches
+        fields = '__all__'

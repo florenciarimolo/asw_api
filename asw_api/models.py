@@ -32,3 +32,21 @@ class Comments(models.Model):
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+class IssuesVotes(models.Model):
+    issue_id = models.ForeignKey(Issues, to_field='id')
+    username = models.ForeignKey(User, to_field='username')
+    index_together = ["issue_id", "username"]
+
+    class Meta:
+        unique_together = (("issue_id", "username"),)
+        ordering = ('issue_id',)
+
+class IssuesWaches(models.Model):
+    issue_id = models.ForeignKey(Issues, to_field='id')
+    username = models.ForeignKey(User, to_field='username')
+    index_together = ["issue_id", "username"]
+
+    class Meta:
+        unique_together = ("issue_id", "username",)
+        ordering = ('issue_id',)

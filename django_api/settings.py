@@ -60,7 +60,7 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = API_BASE_URL
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
-MIDDLEWARE = [
+MIDDLEWARE_CLASSES = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
