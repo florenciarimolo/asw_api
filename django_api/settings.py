@@ -182,7 +182,7 @@ LOGOUT_URL = '/accounts/logout'
 
 SWAGGER_SETTINGS = {
     'SECCURITY_DEFINITIONS': {
-        "basic": {
+        "api_key": {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"

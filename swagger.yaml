@@ -1,41 +1,303 @@
 swagger: '2.0'
 info:
-  description: The API of the Issue Tracker project.
-  version: 1.0.0
   title: Issue Tracker API
+  description: ''
+  version: ''
 host: asw-api.herokuapp.com
-basePath: /api
-tags:
-  - name: issues
-    description: Everything about Issues
-  - name: users
-    description: Info of all users
-securityDefinitions:
-  api_key:
-    type: apiKey
-    name: Authentication
-    in: header
 schemes:
   - https
-  - http
 paths:
-  /issues:
+  /v1/:
     get:
+      operationId: list
       tags:
-        - issues
-      summary: Get list of all issues
-      description: ''
-      operationId: getIssuesList
+        - v1
+      parameters:
+        - type: string
+          name: Authorization
+          description: The user token. The value must be preceeded by "Token ".
+          in: header
+          required: true
+          default: Token
+      responses:
+        '200':
+          description: ''
+  /v1/issues/:
+    get:
+      operationId: issues_list
+      tags:
+        - v1
+      parameters:
+        - type: integer
+          name: limit
+          description: Number of results to return per page.
+          in: query
+          required: false
+        - type: integer
+          name: offset
+          description: The initial index from which to return the results.
+          in: query
+          required: false
+      responses:
+        '200':
+          description: ''
+    post:
+      operationId: issues_create
+      tags:
+        - v1
       consumes:
         - application/json
-      produces:
+      parameters:
+        - name: data
+          schema:
+            type: object
+            properties:
+              kind:
+                type: string
+                description: ''
+              priority:
+                type: string
+                description: ''
+              assignee:
+                type: string
+                description: ''
+              title:
+                type: string
+                description: ''
+              votes:
+                type: integer
+                description: ''
+              status:
+                type: string
+                description: ''
+            required:
+              - title
+              - kind
+              - priority
+          in: body
+      responses:
+        '201':
+          description: ''
+  '/v1/issues/{id}/':
+    get:
+      operationId: issues_read
+      tags:
+        - v1
+      parameters:
+        - type: integer
+          name: id
+          description: A unique integer value identifying this issues.
+          in: path
+          required: true
+      responses:
+        '200':
+          description: ''
+    put:
+      operationId: issues_update
+      tags:
+        - v1
+      consumes:
         - application/json
       parameters:
-        - name: Authentication
-          in: header
-          description: >-
-            A token value provided by the API. This value is unique for every
-            user. Important: the token must be 
+        - type: integer
+          name: id
+          description: A unique integer value identifying this issues.
+          in: path
           required: true
-          type: string
-          default: Token
+        - name: data
+          schema:
+            type: object
+            properties:
+              kind:
+                type: string
+                description: ''
+              priority:
+                type: string
+                description: ''
+              assignee:
+                type: string
+                description: ''
+              title:
+                type: string
+                description: ''
+              votes:
+                type: integer
+                description: ''
+              status:
+                type: string
+                description: ''
+            required:
+              - title
+              - kind
+              - priority
+          in: body
+      responses:
+        '200':
+          description: ''
+    delete:
+      operationId: issues_delete
+      tags:
+        - v1
+      parameters:
+        - type: integer
+          name: id
+          description: A unique integer value identifying this issues.
+          in: path
+          required: true
+      responses:
+        '204':
+          description: ''
+  '/v1/issues/{id}/comments/':
+    get:
+      operationId: issues_comments_list
+      tags:
+        - v1
+      parameters:
+        - type: string
+          name: id
+          description: ''
+          in: path
+          required: true
+        - type: integer
+          name: limit
+          description: Number of results to return per page.
+          in: query
+          required: false
+        - type: integer
+          name: offset
+          description: The initial index from which to return the results.
+          in: query
+          required: false
+      responses:
+        '200':
+          description: ''
+    post:
+      operationId: issues_comments_create
+      tags:
+        - v1
+      consumes:
+        - application/json
+      parameters:
+        - type: string
+          name: id
+          description: ''
+          in: path
+          required: true
+        - name: data
+          schema:
+            type: object
+            properties:
+              comment:
+                type: string
+                description: ''
+            required:
+              - comment
+          in: body
+      responses:
+        '201':
+          description: ''
+  '/v1/issues/{issue_id}/comments/{id}':
+    get:
+      operationId: issues_comments_read
+      tags:
+        - v1
+      parameters:
+        - type: string
+          name: issue_id
+          description: ''
+          in: path
+          required: true
+        - type: integer
+          name: id
+          description: A unique integer value identifying this comments.
+          in: path
+          required: true
+      responses:
+        '200':
+          description: ''
+    put:
+      operationId: issues_comments_update
+      tags:
+        - v1
+      consumes:
+        - application/json
+      parameters:
+        - type: string
+          name: issue_id
+          description: ''
+          in: path
+          required: true
+        - type: integer
+          name: id
+          description: A unique integer value identifying this comments.
+          in: path
+          required: true
+        - name: data
+          schema:
+            type: object
+            properties:
+              comment:
+                type: string
+                description: ''
+            required:
+              - comment
+          in: body
+      responses:
+        '200':
+          description: ''
+    delete:
+      operationId: issues_comments_delete
+      tags:
+        - v1
+      parameters:
+        - type: string
+          name: issue_id
+          description: ''
+          in: path
+          required: true
+        - type: integer
+          name: id
+          description: A unique integer value identifying this comments.
+          in: path
+          required: true
+      responses:
+        '204':
+          description: ''
+  /v1/users/:
+    get:
+      operationId: users_list
+      tags:
+        - v1
+      parameters:
+        - type: integer
+          name: limit
+          description: Number of results to return per page.
+          in: query
+          required: false
+        - type: integer
+          name: offset
+          description: The initial index from which to return the results.
+          in: query
+          required: false
+      responses:
+        '200':
+          description: ''
+  '/v1/users/{username}':
+    get:
+      operationId: users_read
+      tags:
+        - v1
+      parameters:
+        - type: string
+          name: username
+          description: ''
+          in: path
+          required: true
+      responses:
+        '200':
+          description: ''
+securityDefinitions:
+  APIKeyHeader:
+    type: apiKey
+    in: header
+    name: Authorization
