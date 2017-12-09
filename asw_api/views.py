@@ -27,6 +27,7 @@ def has_update_or_destroy_object_permission(request, obj):
     owner_token_value = Token.objects.get(user_id=owner_id).key
     return token == owner_token_value
 
+
 class Index(views.APIView):
     def get(self, request, format=None):
         data = OrderedDict((
