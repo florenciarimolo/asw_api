@@ -1,8 +1,9 @@
 from django.conf.urls import url
+from django.conf.urls.static import static
+from django.conf import settings
 
 from asw_api import views
 
-# url(r'^fileUploads/(?P<pk>[0-9]+)$', views.FileUploadDetail.as_view(), name='fileUploads-detail'),
 
 urlpatterns = [
     url(r'^issues/$', views.IssuesList.as_view(), name='issues-list'),
@@ -14,4 +15,4 @@ urlpatterns = [
     url(r'^users/(?P<username>.+)$', views.UserDetail.as_view(), name='user-detail'),
     url(r'^users/$', views.UsersList.as_view(), name='users-list'),
     url(r'^$', views.Index.as_view())
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

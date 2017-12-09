@@ -32,7 +32,7 @@ class Attachment(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, to_field='username')
     issue = models.ForeignKey(Issues, related_name='attachments', to_field='id')
-    datafile = models.FileField()
+    datafile = models.FileField(upload_to='downloads/')
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

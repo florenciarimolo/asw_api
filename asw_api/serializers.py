@@ -44,6 +44,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
     owner = serializers.ReadOnlyField(source='owner.username')
     issue = serializers.ReadOnlyField(source='issue.id')
+    datafile = serializers.FileField(max_length=None, use_url=True)
 
     def get_url(self, obj):
         request = self.context.get('request', None)
@@ -62,7 +63,6 @@ class IssueSerializer(serializers.ModelSerializer):
     attachments_url = serializers.SerializerMethodField()
     attachments = AttachmentSerializer(many=True, read_only=True)
     owner = serializers.ReadOnlyField(source='owner.username')
-
 
     def get_url(self, obj):
         request = self.context.get('request', None)
