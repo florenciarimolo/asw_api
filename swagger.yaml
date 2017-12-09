@@ -6,19 +6,19 @@ info:
 host: asw-api.herokuapp.com
 schemes:
   - https
+securityDefinitions:
+  APIKeyHeader:
+    type: apiKey
+    in: header
+    name: Authorization
 paths:
   /v1/:
     get:
       operationId: list
       tags:
         - v1
-      parameters:
-        - type: string
-          name: Authorization
-          description: The user token. The value must be preceeded by "Token ".
-          in: header
-          required: true
-          default: Token
+      security:
+        - APIKeyHeader: []
       responses:
         '200':
           description: ''
@@ -296,8 +296,3 @@ paths:
       responses:
         '200':
           description: ''
-securityDefinitions:
-  APIKeyHeader:
-    type: apiKey
-    in: header
-    name: Authorization
