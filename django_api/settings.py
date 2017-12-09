@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import dj_database_url
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -24,11 +26,11 @@ SECRET_KEY = 'random_secret_key'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'asw-api.herokuapp.com']
 
 # Application definition
 
-API_BASE_URL = '/api'
+API_BASE_URL = 'v1/'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -48,6 +50,10 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     # Login via Twitter
     'allauth.socialaccount.providers.twitter',
+    # Swagger
+    'rest_framework_swagger',
+    # CORS
+    'corsheaders',
 ]
 
 SITE_ID = 1
@@ -55,6 +61,8 @@ LOGIN_REDIRECT_URL = API_BASE_URL
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
 MIDDLEWARE_CLASSES = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -62,7 +70,12 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Simplified static file serving.
+    # https://warehouse.python.org/project/whitenoise/
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'django_api.urls'
 
@@ -155,4 +168,28 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+# URL config for Swagger
+LOGIN_URL = '/accounts/twitter/login'
+LOGOUT_URL = '/accounts/logout'
+
+SWAGGER_SETTINGS = {
+    'SECCURITY_DEFINITIONS': {
+        "basic": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+}
+
+SHOW_REQUEST_HEADERS = True
+
+SUPPORTED_SUBMIT_METHODS = ['get', 'post', 'put', 'delete', ]

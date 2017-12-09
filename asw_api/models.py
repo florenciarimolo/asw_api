@@ -45,7 +45,6 @@ class IssuesVotes(models.Model):
 class IssuesWaches(models.Model):
     issue_id = models.ForeignKey(Issues, to_field='id')
     username = models.ForeignKey(User, to_field='username')
-    unique_together = ("issue_id", "username",)
     index_together = ["issue_id", "username"]
 
     class Meta:

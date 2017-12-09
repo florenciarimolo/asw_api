@@ -1,0 +1,41 @@
+swagger: '2.0'
+info:
+  description: The API of the Issue Tracker project.
+  version: 1.0.0
+  title: Issue Tracker API
+host: asw-api.herokuapp.com
+basePath: /api
+tags:
+  - name: issues
+    description: Everything about Issues
+  - name: users
+    description: Info of all users
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: Authentication
+    in: header
+schemes:
+  - https
+  - http
+paths:
+  /issues:
+    get:
+      tags:
+        - issues
+      summary: Get list of all issues
+      description: ''
+      operationId: getIssuesList
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: Authentication
+          in: header
+          description: >-
+            A token value provided by the API. This value is unique for every
+            user. Important: the token must be 
+          required: true
+          type: string
+          default: Token
