@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from collections import OrderedDict
 
+from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
 from django.db import OperationalError
 from rest_framework import generics
@@ -13,7 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_extensions import generics as genericsx
-from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, IssuesVotesSerializer
+from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, IssuesVotesSerializer, VoteSerializer, IssueVotesSerializer
 from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches
 
 FORBIDDEN_MESSAGE = {'details': 'You don\'t have permission to do this action using the credentials you supplied.'}
@@ -111,18 +112,35 @@ class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
         return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
 
 
-class IssueVotesList(generics.ListAPIView):
-    serializer_class = IssuesVotesSerializer
-    def get_queryset(self):
-        issue_id = self.request.GET['issue_id']
-        username = self.request.GET['username']
-        print(issue_id)
-        print(username)
-        return IssuesVotes.objects.get(issue_id=issue_id, username=username)
+class Vote(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = VoteSerializer
+    queryset = IssuesVotes.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('issue_id', 'username')
+
+    def get_object(self):
+        return IssuesVotes.objects.first()
+
+    def put(self, request, *args, **kwargs):
+        vote = IssuesVotes.objects.first()
+        if has_update_or_destroy_object_permission(request, vote):
+            return self.update(request, *args, **kwargs)
+        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+
+    def delete(self, request, *args, **kwargs):
+        vote = IssuesVotes.objects.first()
+        if has_update_or_destroy_object_permission(request, vote):
+            return self.destroy(request, *args, **kwargs)
+        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
 
 
 class IssuesVotesList(generics.ListCreateAPIView):
     serializer_class = IssuesVotesSerializer
+    queryset = IssuesVotes.objects.all()
+
+class IssueVotesList(generics.ListAPIView):
+    serializer_class = IssueVotesSerializer
     def get_queryset(self):
-        return IssuesVotes.objects.all()
+        issue_id = self.kwargs.get('pk')
+        return IssuesVotes.objects.filter(issue_id=issue_id)
 

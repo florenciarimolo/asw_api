@@ -55,11 +55,13 @@ class IssueSerializer(serializers.ModelSerializer):
         model = Issues
         fields = '__all__'
 
-class IssueVotesSerializer(serializers.ModelSerializer):
+class VoteSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
 
     def get_url(self, obj):
-        return reverse('issue_votes-list')
+        request = self.context.get('request', None)
+        format = self.context.get('format', None)
+        return reverse('vote-list', request=request, format=format)
 
     class Meta:
         model = IssuesVotes
@@ -74,3 +76,15 @@ class IssuesVotesSerializer(serializers.ModelSerializer):
     class Meta:
         model = IssuesVotes
         fields = '__all__'
+
+class IssueVotesSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        kwargs = {'pk': obj.id}
+        return reverse('issue_votes-list', kwargs=kwargs)
+
+    class Meta:
+        model = IssuesVotes
+        fields = '__all__'
+
