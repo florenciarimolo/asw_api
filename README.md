@@ -30,7 +30,7 @@ The project uses these following packages. All in the requeriments.txt file for 
 * **Florencia Rímolo** - [florenciarimolo](https://github.com/florenciarimolo)
 * **Jessica Sobreviela** - [jessicasobreviela](https://github.com/jessicasobreviela)
 * **Jonathan Nebot** - [jonator8](https://github.com/jonator8)
-* **David Marin** - [florenciarimolo](https://github.com/DuveD)
+* **David Marin** - [DuveD](https://github.com/DuveD)
 
 
 
