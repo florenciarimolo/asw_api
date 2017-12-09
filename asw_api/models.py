@@ -20,12 +20,16 @@ class Issues(models.Model):
     votes = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(1)], blank=True)
     assignee = models.ForeignKey(User, related_name='assignee', to_field='username', null=True)
     owner = models.ForeignKey(User, related_name='owner', to_field='username', null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Comments(models.Model):
     comment = models.TextField()
     owner = models.ForeignKey(User, to_field='username')
     issue = models.ForeignKey(Issues, related_name='comments', to_field='id')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

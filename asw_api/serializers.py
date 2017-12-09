@@ -36,7 +36,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('href', 'username', 'first_name', 'last_name', 'image_url', 'token')
+        fields = ('href',
+                  'username',
+                  'first_name',
+                  'last_name',
+                  'image_url',
+                  'token')
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -63,7 +68,12 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comments
-        fields = ('href', 'comment', '_links')
+        fields = ('href',
+                  'id',
+                  'comment',
+                  'created_at',
+                  'updated_at'
+                  '_links',)
 
 
 class IssueSerializer(serializers.ModelSerializer):
@@ -91,11 +101,21 @@ class IssueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Issues
-        fields = ('href', 'title', 'kind', 'priority', 'status', 'votes', 'assignee', '_links', 'comments')
+        fields = ('href',
+                  'id',
+                  'title',
+                  'kind',
+                  'priority',
+                  'status',
+                  'votes',
+                  'assignee',
+                  'created_at',
+                  'updated_at',
+                  '_links',
+                  'comments')
 
 
 class VoteSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         kwargs = {'pk': obj.id, 'username': obj.username}
@@ -103,11 +123,11 @@ class VoteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IssuesVotes
-        fields = '__all__'
+        fields = ('issue_id',
+                  'username')
 
 
 class IssueVotesSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         kwargs = {'pk': obj.id}
@@ -115,22 +135,22 @@ class IssueVotesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IssuesVotes
-        fields = '__all__'
+        fields = ('issue_id',
+                  'username')
 
 
 class IssuesVotesSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         return reverse('issues_votes-list')
 
     class Meta:
         model = IssuesVotes
-        fields = '__all__'
+        fields = ('issue_id',
+                  'username')
 
 
 class WatchSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         kwargs = {'username': obj.username, 'pk': obj.id}
@@ -138,11 +158,11 @@ class WatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IssuesWaches
-        fields = '__all__'
+        fields = ('issue_id',
+                  'username')
 
 
 class UserWatchesSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         kwargs = {'username': obj.username}
@@ -150,15 +170,16 @@ class UserWatchesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IssuesWaches
-        fields = '__all__'
+        fields = ('issue_id',
+                  'username')
 
 
 class IssuesWatchSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         return reverse('issues_watch-list')
 
     class Meta:
         model = IssuesWaches
-        fields = '__all__'
+        fields = ('issue_id',
+                  'username')
