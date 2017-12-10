@@ -2,8 +2,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 
-from asw_api.models import Issues, Comments, Attachment
-from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches
+from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches, Attachment
 from django.contrib.auth.models import User
 
 
@@ -73,7 +72,7 @@ class CommentSerializer(serializers.ModelSerializer):
                   'id',
                   'comment',
                   'created_at',
-                  'updated_at'
+                  'updated_at',
                   '_links',)
 
 
@@ -97,9 +96,9 @@ class AttachmentSerializer(serializers.ModelSerializer):
 class IssueSerializer(serializers.ModelSerializer):
     href = serializers.SerializerMethodField()
     comments = CommentSerializer(many=True, read_only=True)
-    attachments_url = serializers.SerializerMethodField()
+    #attachments_url = serializers.SerializerMethodField()
     attachments = AttachmentSerializer(many=True, read_only=True)
-    owner = serializers.ReadOnlyField(source='owner.username')
+    #owner = serializers.ReadOnlyField(source='owner.username')
     _links = serializers.SerializerMethodField()
 
     def get_href(self, obj):
@@ -139,7 +138,8 @@ class IssueSerializer(serializers.ModelSerializer):
                   'created_at',
                   'updated_at',
                   '_links',
-                  'comments')
+                  'comments',
+                  'attachments',)
 
 
 class VoteSerializer(serializers.ModelSerializer):

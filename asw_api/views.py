@@ -17,10 +17,8 @@ from rest_framework.reverse import reverse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_extensions import generics as genericsx
 from rest_framework.parsers import FormParser, MultiPartParser
-from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, AttachmentSerializer
-from asw_api.models import Issues, Comments, Attachment
-from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, IssuesVotesSerializer, IssueVotesSerializer, VoteSerializer, WatchSerializer, IssuesWatchSerializer, UserWatchesSerializer
-from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches
+from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, IssuesVotesSerializer, IssueVotesSerializer, VoteSerializer, WatchSerializer, IssuesWatchSerializer, UserWatchesSerializer, AttachmentSerializer
+from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches, Attachment
 
 def has_update_or_destroy_object_permission(request, obj):
     if request.user.is_authenticated:

@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
     url(r'^api/', include('asw_api.urls')),
     url(r'^$', IndexView, name='home'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     url(settings.API_BASE_URL, include('asw_api.urls')),
     url(r'^$', schema_view),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
