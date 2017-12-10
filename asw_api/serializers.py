@@ -98,7 +98,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
 class IssueSerializer(serializers.ModelSerializer):
     href = serializers.SerializerMethodField()
     comments = CommentSerializer(many=True, read_only=True)
-    #attachments_url = serializers.SerializerMethodField()
+    attachments_url = serializers.SerializerMethodField()
     attachments = AttachmentSerializer(many=True, read_only=True)
     #owner = serializers.ReadOnlyField(source='owner.username')
     votes = serializers.SerializerMethodField()
@@ -152,6 +152,7 @@ class IssueSerializer(serializers.ModelSerializer):
                   'updated_at',
                   '_links',
                   'comments',
+                  'attachments_url',
                   'attachments',)
 
 
