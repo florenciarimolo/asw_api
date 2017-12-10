@@ -16,7 +16,7 @@ from rest_extensions import generics as genericsx
 from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer
 from asw_api.models import Issues, Comments
 
-from drf_hal_json.views import HalCreateModelMixin
+#from drf_hal_json.views import HalCreateModelMixin
 
 FORBIDDEN_MESSAGE = {'details': 'You don\'t have permission to do this action using the credentials you supplied.'}
 
@@ -60,7 +60,7 @@ class UserDetail(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class IssuesList(HalCreateModelMixin, generics.ListCreateAPIView):
+class IssuesList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = Issues.objects.all()
     serializer_class = IssueSerializer
@@ -69,7 +69,7 @@ class IssuesList(HalCreateModelMixin, generics.ListCreateAPIView):
         serializer.save(owner=self.request.user)
 
 
-class IssueDetail(HalCreateModelMixin, genericsx.RetrieveUpdateDestroyAPIView):
+class IssueDetail(genericsx.RetrieveUpdateDestroyAPIView):
     queryset = Issues.objects.all()
     serializer_class = IssueSerializer
 
@@ -88,7 +88,7 @@ class IssueDetail(HalCreateModelMixin, genericsx.RetrieveUpdateDestroyAPIView):
         return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
 
 
-class CommentsList(HalCreateModelMixin, generics.ListCreateAPIView):
+class CommentsList(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
@@ -101,7 +101,7 @@ class CommentsList(HalCreateModelMixin, generics.ListCreateAPIView):
         serializer.save(owner=self.request.user, issue=issue)
 
 
-class CommentDetail(HalCreateModelMixin, genericsx.RetrieveUpdateDestroyAPIView):
+class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
     queryset = Comments.objects.all()
     serializer_class = CommentSerializer
 
