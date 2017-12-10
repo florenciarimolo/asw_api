@@ -1,9 +1,11 @@
 from rest_framework import serializers
+from django.core.validators import MinValueValidator, MaxValueValidator
 from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 
 from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches, Attachment
 from django.contrib.auth.models import User
+from django.db import models
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -99,7 +101,17 @@ class IssueSerializer(serializers.ModelSerializer):
     #attachments_url = serializers.SerializerMethodField()
     attachments = AttachmentSerializer(many=True, read_only=True)
     #owner = serializers.ReadOnlyField(source='owner.username')
+    votes = serializers.SerializerMethodField()
+    watches = serializers.SerializerMethodField()
     _links = serializers.SerializerMethodField()
+
+    def get_votes(self, obj):
+        print (IssuesVotes.objects.filter(issue_id=obj.id).count())
+        return IssuesVotes.objects.filter(issue_id=obj.id).count()
+
+    def get_watches(self, obj):
+        print (IssuesVotes.objects.filter(issue_id=obj.id).count())
+        return IssuesWaches.objects.filter(issue_id=obj.id).count()
 
     def get_href(self, obj):
         request = self.context.get('request', None)
@@ -134,6 +146,7 @@ class IssueSerializer(serializers.ModelSerializer):
                   'priority',
                   'status',
                   'votes',
+                  'watches',
                   'assignee',
                   'created_at',
                   'updated_at',
