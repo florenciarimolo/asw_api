@@ -7,7 +7,9 @@ from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
 from django.db import OperationalError
+from django.http import HttpResponse
 from django.http import Http404, HttpResponseForbidden
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics
 from rest_framework import views
 from rest_framework.authtoken.models import Token
@@ -17,7 +19,9 @@ from rest_framework.reverse import reverse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_extensions import generics as genericsx
 from rest_framework.parsers import FormParser, MultiPartParser
-from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, IssuesVotesSerializer, IssueVotesSerializer, VoteSerializer, WatchSerializer, IssuesWatchSerializer, UserWatchesSerializer, AttachmentSerializer
+from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, AttachmentSerializer
+from asw_api.serializers import VoteSerializer, UnVoteSerializer, IssueVotesSerializer
+from asw_api.serializers import WatchSerializer, UnWatchSerializer, UserWatchesSerializer
 from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches, Attachment
 
 def has_update_or_destroy_object_permission(request, obj):
@@ -116,29 +120,32 @@ class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
         raise HttpResponseForbidden
 
 
-class Vote(generics.RetrieveDestroyAPIView):
+class Vote(generics.CreateAPIView):
     serializer_class = VoteSerializer
 
-    def get_object(self):
+    def create(self, request, *args, **kwargs):
         issue_id = self.kwargs.get('pk')
-        username = self.kwargs.get('username')
-        return IssuesVotes.objects.get(issue_id=issue_id,
-                                       username=username)
+        issue = Issues.objects.get(id=issue_id)
+        username = self.request.user
+        try:
+            IssuesVotes.objects.get(issue_id=issue,username=username)
+            return HttpResponse('Issue already voted.', status=208)
+        except ObjectDoesNotExist:
+            IssuesVotes.objects.create(issue_id=issue,username=username)
+            return HttpResponse('Issue voted.',status=201)
+
+class UnVote(generics.DestroyAPIView):
+    serializer_class = UnVoteSerializer
 
     def delete(self, request, *args, **kwargs):
         issue_id = self.kwargs.get('pk')
-        username = self.kwargs.get('username')
-        if request.user.is_authenticated and username == request.user.username:
-            return self.destroy(request, *args, **kwargs)
-        raise HttpResponseForbidden
-
-
-    #def post(self, request, *args, **kwargs):
-    #    issue_id = self.kwargs.get('pk')
-    #    username = self.kwargs.get('username')
-    #    if request.user.is_authenticated and username == request.user.username:
-    #        return self.post(request, *args, **kwargs)
-    #    raise HttpResponseForbidden
+        issue = Issues.objects.get(id=issue_id)
+        username = self.request.user
+        try:
+            IssuesVotes.objects.get(issue_id=issue,username=username).delete()
+            return HttpResponse('Issue unvoted.', status=204)
+        except ObjectDoesNotExist:
+            return HttpResponse('Issue not voted.', status=208)
 
 class IssueVotesList(generics.ListAPIView):
     serializer_class = IssueVotesSerializer
@@ -149,47 +156,40 @@ class IssueVotesList(generics.ListAPIView):
         return IssuesVotes.objects.filter(issue_id=issue_id)
 
 
-class IssuesVotesList(generics.ListCreateAPIView):
-    serializer_class = IssuesVotesSerializer
-    queryset = IssuesVotes.objects.all()
-
-
-class Watch(generics.RetrieveDestroyAPIView):
+class Watch(generics.CreateAPIView):
     serializer_class = WatchSerializer
 
-    def get_object(self):
-        username = self.kwargs.get('username')
+    def create(self, request, *args, **kwargs):
         issue_id = self.kwargs.get('pk')
-        return IssuesWaches.objects.get(issue_id=issue_id,
-                                       username=username)
+        issue = Issues.objects.get(id=issue_id)
+        username = self.request.user
+        try:
+            IssuesWaches.objects.get(issue_id=issue,username=username)
+            return HttpResponse('Issue already watched.', status=208)
+        except ObjectDoesNotExist:
+            IssuesWaches.objects.create(issue_id=issue,username=username)
+            return HttpResponse('Issue watched.',status=201)
+
+class UnWatch(generics.DestroyAPIView):
+    serializer_class = UnWatchSerializer
 
     def delete(self, request, *args, **kwargs):
-        username = self.kwargs.get('username')
         issue_id = self.kwargs.get('pk')
-        if request.user.is_authenticated and username == request.user.username:
-            return self.destroy(request, *args, **kwargs)
-        raise HttpResponseForbidden
+        issue = Issues.objects.get(id=issue_id)
+        username = self.request.user
+        try:
+            IssuesWaches.objects.get(issue_id=issue,username=username).delete()
+            return HttpResponse('Issue unwatched.', status=204)
+        except ObjectDoesNotExist:
+            return HttpResponse('Issue not watched.', status=208)
 
-    #def post(self, request, *args, **kwargs):
-    #    issue_id = self.kwargs.get('pk')
-    #    username = self.kwargs.get('username')
-    #    if request.user.is_authenticated and username == request.user.username:
-    #        return self.post(request, *args, **kwargs)
-    #    raise HttpResponseForbidden
-
-
-class UserWatchesList(generics.ListCreateAPIView):
+class UserWatchesList(generics.ListAPIView):
     serializer_class = UserWatchesSerializer
     queryset = IssuesWaches.objects.all()
 
     def get_queryset(self):
-        username = self.kwargs.get('username')
+        username = self.request.user
         return IssuesWaches.objects.filter(username=username)
-
-
-class IssuesWatchList(generics.ListAPIView):
-    serializer_class = IssuesWatchSerializer
-    queryset = IssuesWaches.objects.all()
 
 
 class AttachmentList(generics.ListCreateAPIView):
@@ -203,7 +203,7 @@ class AttachmentList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         issue_id = self.kwargs.get('pk')
-        issue = Issues.objects.filter(id=issue_id)[0]
+        issue = Issues.objects.get(id=issue_id)
         serializer.save(owner=self.request.user,
                         datafile=self.request.data.get('datafile'),
                         issue=issue)

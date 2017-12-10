@@ -11,6 +11,7 @@ from django.db import models
 class UserSerializer(serializers.ModelSerializer):
     href = serializers.SerializerMethodField()
     image_url = serializers.SerializerMethodField()
+    watches = serializers.SerializerMethodField()
     token = serializers.SerializerMethodField()
 
     def get_image_url(self, obj):
@@ -20,6 +21,9 @@ class UserSerializer(serializers.ModelSerializer):
         except:
             pass
         return imge_url
+
+    def get_watches(self, obj):
+        return IssuesWaches.objects.filter(username=obj.username).count()
 
     def get_href(self, obj):
         request = self.context.get('request', None)
@@ -43,6 +47,7 @@ class UserSerializer(serializers.ModelSerializer):
                   'first_name',
                   'last_name',
                   'image_url',
+                  'watches',
                   'token')
 
 
@@ -102,15 +107,13 @@ class IssueSerializer(serializers.ModelSerializer):
     attachments = AttachmentSerializer(many=True, read_only=True)
     #owner = serializers.ReadOnlyField(source='owner.username')
     votes = serializers.SerializerMethodField()
-    watches = serializers.SerializerMethodField()
+    watchers = serializers.SerializerMethodField()
     _links = serializers.SerializerMethodField()
 
     def get_votes(self, obj):
-        print (IssuesVotes.objects.filter(issue_id=obj.id).count())
         return IssuesVotes.objects.filter(issue_id=obj.id).count()
 
-    def get_watches(self, obj):
-        print (IssuesVotes.objects.filter(issue_id=obj.id).count())
+    def get_watchers(self, obj):
         return IssuesWaches.objects.filter(issue_id=obj.id).count()
 
     def get_href(self, obj):
@@ -146,7 +149,7 @@ class IssueSerializer(serializers.ModelSerializer):
                   'priority',
                   'status',
                   'votes',
-                  'watches',
+                  'watchers',
                   'assignee',
                   'created_at',
                   'updated_at',
@@ -159,14 +162,22 @@ class IssueSerializer(serializers.ModelSerializer):
 class VoteSerializer(serializers.ModelSerializer):
 
     def get_url(self, obj):
-        kwargs = {'pk': obj.id, 'username': obj.username}
-        return reverse('vote-list', kwargs=kwargs)
+        kwargs = {'pk': obj.id}
+        return reverse('vote', kwargs=kwargs)
 
     class Meta:
         model = IssuesVotes
-        fields = ('issue_id',
-                  'username')
+        fields = ()
 
+class UnVoteSerializer(serializers.ModelSerializer):
+
+    def get_url(self, obj):
+        kwargs = {'pk': obj.id}
+        return reverse('unvote', kwargs=kwargs)
+
+    class Meta:
+        model = IssuesVotes
+        fields = ()
 
 class IssueVotesSerializer(serializers.ModelSerializer):
 
@@ -176,51 +187,34 @@ class IssueVotesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IssuesVotes
-        fields = ('issue_id',
-                  'username')
-
-
-class IssuesVotesSerializer(serializers.ModelSerializer):
-
-    def get_url(self, obj):
-        return reverse('issues_votes-list')
-
-    class Meta:
-        model = IssuesVotes
-        fields = ('issue_id',
-                  'username')
-
+        fields = ('username',)
 
 class WatchSerializer(serializers.ModelSerializer):
 
     def get_url(self, obj):
-        kwargs = {'username': obj.username, 'pk': obj.id}
-        return reverse('watch-list', kwargs=kwargs)
+        kwargs = {'pk': obj.id}
+        return reverse('watch', kwargs=kwargs)
 
     class Meta:
         model = IssuesWaches
-        fields = ('issue_id',
-                  'username')
+        fields = ()
+
+class UnWatchSerializer(serializers.ModelSerializer):
+
+    def get_url(self, obj):
+        kwargs = {'pk': obj.id}
+        return reverse('unwatch', kwargs=kwargs)
+
+    class Meta:
+        model = IssuesWaches
+        fields = ()
 
 
 class UserWatchesSerializer(serializers.ModelSerializer):
 
     def get_url(self, obj):
-        kwargs = {'username': obj.username}
-        return reverse('user_watches-list', kwargs=kwargs)
+        return reverse('user_watches-list')
 
     class Meta:
         model = IssuesWaches
-        fields = ('issue_id',
-                  'username')
-
-
-class IssuesWatchSerializer(serializers.ModelSerializer):
-
-    def get_url(self, obj):
-        return reverse('issues_watch-list')
-
-    class Meta:
-        model = IssuesWaches
-        fields = ('issue_id',
-                  'username')
+        fields = ('issue_id',)

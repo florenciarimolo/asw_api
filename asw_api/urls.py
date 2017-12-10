@@ -11,13 +11,13 @@ urlpatterns = [
     url(r'^issues/(?P<pk>[0-9]+)/comments/$', views.CommentsList.as_view(), name='comments-list'),
     url(r'^issues/(?P<issue_id>[0-9]+)/comments/(?P<pk>[0-9]+)$', views.CommentDetail.as_view(), name='comment-detail'),
 
-    url(r'^issues/(?P<pk>[0-9]+)/votes/(?P<username>.+)/$', views.Vote.as_view(), name='vote-list'),
+    url(r'^issues/(?P<pk>[0-9]+)/vote/$', views.Vote.as_view(), name='vote'),
+    url(r'^issues/(?P<pk>[0-9]+)/unvote/$', views.UnVote.as_view(), name='unvote'),
     url(r'^issues/(?P<pk>[0-9]+)/votes/$', views.IssueVotesList.as_view(), name='issue_votes-list'),
-    url(r'^issues/votes/$', views.IssuesVotesList.as_view(), name='issues_votes-list'),
 
-    url(r'^users/(?P<username>.+)/watches/(?P<pk>[0-9]+)/$', views.Watch.as_view(), name='watch-list'),
-    url(r'^users/(?P<username>.+)/watches/$', views.UserWatchesList.as_view(), name='user_watches-list'),
-    url(r'^users/watches/$', views.IssuesWatchList.as_view(), name='issues_watch-list'),
+    url(r'^user/watch/(?P<pk>[0-9]+)/$', views.Watch.as_view(), name='watch'),
+    url(r'^user/unwatch/(?P<pk>[0-9]+)/$', views.UnWatch.as_view(), name='unwatch'),
+    url(r'^user/watches/$', views.UserWatchesList.as_view(), name='user_watches-list'),
 
     url(r'^issues/(?P<pk>[0-9]+)/attachments/$', views.AttachmentList.as_view(), name='attachment-list'),
     url(r'^issues/(?P<issue_id>[0-9]+)/attachments/(?P<pk>[0-9]+)$', views.AttachmentDetail.as_view(), name='attachment-detail'),
