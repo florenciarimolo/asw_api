@@ -196,3 +196,7 @@ SHOW_REQUEST_HEADERS = True
 SUPPORTED_SUBMIT_METHODS = ['get', 'post', 'put', 'delete', ]
 
 VALIDATOR_URL = None
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "downloads")
+
+MEDIA_URL = '/downloads/'

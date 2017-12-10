@@ -14,9 +14,11 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_extensions import generics as genericsx
-from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, IssuesVotesSerializer, IssueVotesSerializer, VoteSerializer, WatchSerializer, IssuesWatchSerializer, UserWatchesSerializer
-from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches
+from rest_framework.parsers import FormParser, MultiPartParser
+from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, IssuesVotesSerializer, IssueVotesSerializer, VoteSerializer, WatchSerializer, IssuesWatchSerializer, UserWatchesSerializer, AttachmentSerializer
+from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches, Attachment
 
 def has_update_or_destroy_object_permission(request, obj):
     if request.user.is_authenticated:
@@ -58,6 +60,8 @@ class IssuesList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = Issues.objects.all()
     serializer_class = IssueSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('kind', 'priority', 'status', 'assignee')
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user, status='New')
@@ -186,3 +190,38 @@ class UserWatchesList(generics.ListCreateAPIView):
 class IssuesWatchList(generics.ListAPIView):
     serializer_class = IssuesWatchSerializer
     queryset = IssuesWaches.objects.all()
+
+
+class AttachmentList(generics.ListCreateAPIView):
+    queryset = Attachment.objects.all()
+    serializer_class = AttachmentSerializer
+    parser_classes = (MultiPartParser, FormParser,)
+
+    def get_queryset(self):
+        issue_id = self.kwargs.get('pk')
+        return Attachment.objects.filter(issue=issue_id)
+
+    def perform_create(self, serializer):
+        issue_id = self.kwargs.get('pk')
+        issue = Issues.objects.filter(id=issue_id)[0]
+        serializer.save(owner=self.request.user,
+                        datafile=self.request.data.get('datafile'),
+                        issue=issue)
+
+
+class AttachmentDetail(genericsx.RetrieveUpdateDestroyAPIView):
+    queryset = Attachment.objects.all()
+    serializer_class = AttachmentSerializer
+
+    def put(self, request, *args, **kwargs):
+        attachment = Attachment.objects.get(id=self.kwargs.get('pk'))
+        if has_update_or_destroy_object_permission(request, attachment):
+            return self.update(request, *args, **kwargs)
+        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+
+    def delete(self, request, *args, **kwargs):
+        attachment = Attachment.objects.get(id=self.kwargs.get('pk'))
+        if has_update_or_destroy_object_permission(request, attachment):
+            return self.destroy(request, *args, **kwargs)
+        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+

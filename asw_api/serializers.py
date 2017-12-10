@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 
-from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches
+from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches, Attachment
 from django.contrib.auth.models import User
 
 
@@ -72,13 +72,33 @@ class CommentSerializer(serializers.ModelSerializer):
                   'id',
                   'comment',
                   'created_at',
-                  'updated_at'
+                  'updated_at',
                   '_links',)
+
+
+class AttachmentSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+    owner = serializers.ReadOnlyField(source='owner.username')
+    issue = serializers.ReadOnlyField(source='issue.id')
+    datafile = serializers.FileField(max_length=None, use_url=True)
+
+    def get_url(self, obj):
+        request = self.context.get('request', None)
+        format = self.context.get('format', None)
+        kwargs = {'pk': obj.id, 'issue_id': obj.issue_id}
+        return reverse('attachment-detail', request=request, format=format, kwargs=kwargs)
+
+    class Meta:
+        model = Attachment
+        fields = '__all__'
 
 
 class IssueSerializer(serializers.ModelSerializer):
     href = serializers.SerializerMethodField()
     comments = CommentSerializer(many=True, read_only=True)
+    #attachments_url = serializers.SerializerMethodField()
+    attachments = AttachmentSerializer(many=True, read_only=True)
+    #owner = serializers.ReadOnlyField(source='owner.username')
     _links = serializers.SerializerMethodField()
 
     def get_href(self, obj):
@@ -86,6 +106,12 @@ class IssueSerializer(serializers.ModelSerializer):
         format = self.context.get('format', None)
         kwargs = {'pk': obj.id}
         return reverse('issue-detail', request=request, format=format, kwargs=kwargs)
+
+    def get_attachments_url(self, obj):
+        request = self.context.get('request', None)
+        format = self.context.get('format', None)
+        kwargs = {'pk': obj.id}
+        return reverse('attachment-list', request=request, format=format, kwargs=kwargs)
 
     def get__links(self, obj):
         request = self.context.get('request', None)
@@ -112,7 +138,8 @@ class IssueSerializer(serializers.ModelSerializer):
                   'created_at',
                   'updated_at',
                   '_links',
-                  'comments')
+                  'comments',
+                  'attachments',)
 
 
 class VoteSerializer(serializers.ModelSerializer):
