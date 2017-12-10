@@ -16,7 +16,8 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
-
+from django.conf.urls.static import static
+from django.conf import settings
 from asw_api import views
 from .views import *
 from django.contrib.auth.views import logout
@@ -27,4 +28,4 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
     url(r'^api/', include('asw_api.urls')),
     url(r'^$', IndexView, name='home'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
