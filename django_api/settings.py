@@ -30,7 +30,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'asw-api.herokuapp.com']
 
 # Application definition
 
-API_BASE_URL = '/api'
+API_BASE_URL = 'v1/'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -50,7 +50,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     # Login via Twitter
     'allauth.socialaccount.providers.twitter',
-    # CORS Headers
+    # Swagger
+    'rest_framework_swagger',
+    # CORS
     'corsheaders',
 ]
 
@@ -58,7 +60,7 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = API_BASE_URL
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
-MIDDLEWARE = [
+MIDDLEWARE_CLASSES = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -173,6 +175,27 @@ STATIC_URL = '/static/'
 # https://warehouse.python.org/project/whitenoise/
 
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+# URL config for Swagger
+LOGIN_URL = '/accounts/twitter/login'
+LOGOUT_URL = '/accounts/logout'
+
+SWAGGER_SETTINGS = {
+    'SECCURITY_DEFINITIONS': {
+        "api_key": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    'JSON_EDITOR': True,
+}
+
+SHOW_REQUEST_HEADERS = True
+
+SUPPORTED_SUBMIT_METHODS = ['get', 'post', 'put', 'delete', ]
+
+VALIDATOR_URL = None
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "downloads")
 

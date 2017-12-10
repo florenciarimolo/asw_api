@@ -16,16 +16,20 @@ class Issues(models.Model):
     title = models.TextField()
     kind = models.CharField(max_length=11)
     priority = models.CharField(max_length=8)
-    status = models.TextField(default='New', blank=True)
+    status = models.TextField(blank=True) #default='New'
     votes = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(1)], blank=True)
     assignee = models.ForeignKey(User, related_name='assignee', to_field='username', null=True)
     owner = models.ForeignKey(User, related_name='owner', to_field='username', null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Comments(models.Model):
     comment = models.TextField()
     owner = models.ForeignKey(User, to_field='username')
     issue = models.ForeignKey(Issues, related_name='comments', to_field='id')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Attachment(models.Model):
@@ -39,3 +43,23 @@ class Attachment(models.Model):
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+
+class IssuesVotes(models.Model):
+    issue_id = models.ForeignKey(Issues, to_field='id')
+    username = models.ForeignKey(User, to_field='username')
+    index_together = ["issue_id", "username"]
+
+    class Meta:
+        unique_together = (("issue_id", "username"),)
+        ordering = ('issue_id',)
+
+
+class IssuesWaches(models.Model):
+    issue_id = models.ForeignKey(Issues, to_field='id')
+    username = models.ForeignKey(User, to_field='username')
+    index_together = ["issue_id", "username"]
+
+    class Meta:
+        unique_together = ("issue_id", "username",)
+        ordering = ('issue_id',)

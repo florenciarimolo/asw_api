@@ -3,10 +3,12 @@ from __future__ import unicode_literals
 
 from collections import OrderedDict
 
+from django.db.models import Q
+from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
 from django.db import OperationalError
+from django.http import Http404, HttpResponseForbidden
 from rest_framework import generics
-from rest_framework import status
 from rest_framework import views
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
@@ -17,13 +19,11 @@ from rest_extensions import generics as genericsx
 from rest_framework.parsers import FormParser, MultiPartParser
 from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, AttachmentSerializer
 from asw_api.models import Issues, Comments, Attachment
-
-FORBIDDEN_MESSAGE = {'details': 'You don\'t have permission to do this action using the credentials you supplied.'}
-
+from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, IssuesVotesSerializer, IssueVotesSerializer, VoteSerializer, WatchSerializer, IssuesWatchSerializer, UserWatchesSerializer
+from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches
 
 def has_update_or_destroy_object_permission(request, obj):
     if request.user.is_authenticated:
-        print(obj.owner.username)
         return obj.owner.username == request.user.username
 
     token = request.META['HTTP_AUTHORIZATION'].replace('Token ', '')
@@ -51,11 +51,11 @@ class UsersList(generics.ListAPIView):
 
 
 class UserDetail(generics.ListAPIView):
-    def get(self, request, *args, **kwargs):
-        kwargs = self.kwargs.get('username')
-        user = User.objects.filter(username=kwargs)[0]
-        serializer = UserSerializer(user, many=False)
-        return Response(serializer.data)
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        username = self.kwargs.get('username')
+        return User.objects.filter(username=username)
 
 
 class IssuesList(generics.ListCreateAPIView):
@@ -66,7 +66,7 @@ class IssuesList(generics.ListCreateAPIView):
     filter_fields = ('kind', 'priority', 'status', 'assignee')
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(owner=self.request.user, status='New')
 
 
 class IssueDetail(genericsx.RetrieveUpdateDestroyAPIView):
@@ -78,14 +78,14 @@ class IssueDetail(genericsx.RetrieveUpdateDestroyAPIView):
         print(issue.owner.username)
         if has_update_or_destroy_object_permission(request, issue):
             return self.update(request, *args, **kwargs)
-        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+        raise HttpResponseForbidden
 
     def delete(self, request, *args, **kwargs):
         issue = Issues.objects.get(id=self.kwargs.get('pk'))
         print(issue.owner.username)
         if has_update_or_destroy_object_permission(request, issue):
             return self.destroy(request, *args, **kwargs)
-        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+        raise HttpResponseForbidden
 
 
 class CommentsList(generics.ListCreateAPIView):
@@ -109,13 +109,89 @@ class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
         comment = Comments.objects.get(id=self.kwargs.get('pk'))
         if has_update_or_destroy_object_permission(request, comment):
             return self.update(request, *args, **kwargs)
-        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+        raise HttpResponseForbidden
 
     def delete(self, request, *args, **kwargs):
         comment = Comments.objects.get(id=self.kwargs.get('pk'))
         if has_update_or_destroy_object_permission(request, comment):
             return self.destroy(request, *args, **kwargs)
-        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+        raise HttpResponseForbidden
+
+
+class Vote(generics.RetrieveDestroyAPIView):
+    serializer_class = VoteSerializer
+
+    def get_object(self):
+        issue_id = self.kwargs.get('pk')
+        username = self.kwargs.get('username')
+        return IssuesVotes.objects.get(issue_id=issue_id,
+                                       username=username)
+
+    def delete(self, request, *args, **kwargs):
+        issue_id = self.kwargs.get('pk')
+        username = self.kwargs.get('username')
+        if request.user.is_authenticated and username == request.user.username:
+            return self.destroy(request, *args, **kwargs)
+        raise HttpResponseForbidden
+
+
+    #def post(self, request, *args, **kwargs):
+    #    issue_id = self.kwargs.get('pk')
+    #    username = self.kwargs.get('username')
+    #    if request.user.is_authenticated and username == request.user.username:
+    #        return self.post(request, *args, **kwargs)
+    #    raise HttpResponseForbidden
+
+class IssueVotesList(generics.ListAPIView):
+    serializer_class = IssueVotesSerializer
+    queryset = IssuesWaches.objects.all()
+
+    def get_queryset(self):
+        issue_id = self.kwargs.get('pk')
+        return IssuesVotes.objects.filter(issue_id=issue_id)
+
+
+class IssuesVotesList(generics.ListCreateAPIView):
+    serializer_class = IssuesVotesSerializer
+    queryset = IssuesVotes.objects.all()
+
+
+class Watch(generics.RetrieveDestroyAPIView):
+    serializer_class = WatchSerializer
+
+    def get_object(self):
+        username = self.kwargs.get('username')
+        issue_id = self.kwargs.get('pk')
+        return IssuesWaches.objects.get(issue_id=issue_id,
+                                       username=username)
+
+    def delete(self, request, *args, **kwargs):
+        username = self.kwargs.get('username')
+        issue_id = self.kwargs.get('pk')
+        if request.user.is_authenticated and username == request.user.username:
+            return self.destroy(request, *args, **kwargs)
+        raise HttpResponseForbidden
+
+    #def post(self, request, *args, **kwargs):
+    #    issue_id = self.kwargs.get('pk')
+    #    username = self.kwargs.get('username')
+    #    if request.user.is_authenticated and username == request.user.username:
+    #        return self.post(request, *args, **kwargs)
+    #    raise HttpResponseForbidden
+
+
+class UserWatchesList(generics.ListCreateAPIView):
+    serializer_class = UserWatchesSerializer
+    queryset = IssuesWaches.objects.all()
+
+    def get_queryset(self):
+        username = self.kwargs.get('username')
+        return IssuesWaches.objects.filter(username=username)
+
+
+class IssuesWatchList(generics.ListAPIView):
+    serializer_class = IssuesWatchSerializer
+    queryset = IssuesWaches.objects.all()
 
 
 class AttachmentList(generics.ListCreateAPIView):
