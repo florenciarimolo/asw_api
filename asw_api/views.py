@@ -16,8 +16,6 @@ from rest_extensions import generics as genericsx
 from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer
 from asw_api.models import Issues, Comments
 
-#from drf_hal_json.views import HalCreateModelMixin
-
 FORBIDDEN_MESSAGE = {'details': 'You don\'t have permission to do this action using the credentials you supplied.'}
 
 

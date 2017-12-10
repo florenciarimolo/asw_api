@@ -6,6 +6,4 @@ gunicorn==19.7.1
 whitenoise==3.3.1
 dj_database_url
 psycopg2==2.7
-drf-nested-fields
-drf-hal-json
 django-cors-headers
