@@ -40,6 +40,10 @@ paths:
           description: 'The initial index from which to return the results.'
           in: query
           required: false
+        - type: string
+          name: priority
+          description: string of priority to sort by.
+          in: query
       responses:
         '200':
           description: 'GET method for all issues.'
@@ -72,6 +76,11 @@ paths:
                 type: integer
                 description: 'Issue votes (it is irrelevant). Votes are stored on the db.'
               status:
+                enum: [
+                  "New",
+                  "Open",
+                  "Closed"
+                  ]
                 type: string
                 description: 'Issue status.'
             required:
@@ -207,6 +216,56 @@ paths:
             required:
               - comment
           in: body
+      responses:
+        '201':
+          description: 'POST method for update'
+  '/v1/issues/{id}/attachments/':
+    get:
+      operationId: issues_attachments_list
+      tags:
+        - v1
+      security:
+        - APIKeyHeader: []
+      parameters:
+        - type: string
+          name: id
+          description: 'ID of the attachment issue.'
+          in: path
+          required: true
+        - type: integer
+          name: limit
+          description: 'Number of results to return per page.'
+          in: query
+          required: false
+        - type: integer
+          name: offset
+          description: 'The initial index from which to return the results.'
+          in: query
+          required: false
+      responses:
+        '200':
+          description: 'GET method for all attachments on a issue.'
+    post:
+      operationId: issues_attachments_create
+      tags:
+        - v1
+      security:
+        - APIKeyHeader: []
+      consumes:
+        - application/json
+        - multipart/form-data
+      parameters:
+        - type: string
+          name: id
+          description: 'ID of the attachment issue.'
+          in: path
+          required: true
+        - name: file
+          in: formData
+          description: The uploaded file data
+          required: true
+          type: file
+        - name: data
       responses:
         '201':
           description: 'POST method for update'
