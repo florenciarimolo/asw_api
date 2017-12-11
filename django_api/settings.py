@@ -30,7 +30,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'asw-api.herokuapp.com']
 
 # Application definition
 
-API_BASE_URL = 'v1/'
+API_BASE_URL ='v1/'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -169,7 +169,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = '/static/'
+STATIC_URL ='/static/'
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
@@ -177,8 +177,8 @@ STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 # URL config for Swagger
-LOGIN_URL = '/accounts/twitter/login'
-LOGOUT_URL = '/accounts/logout'
+LOGIN_URL ='/accounts/twitter/login'
+LOGOUT_URL ='/accounts/logout'
 
 SWAGGER_SETTINGS = {
     'SECCURITY_DEFINITIONS': {
@@ -199,4 +199,4 @@ VALIDATOR_URL = None
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "downloads")
 
-MEDIA_URL = '/downloads/'
+MEDIA_URL ='/downloads/'

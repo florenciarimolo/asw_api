@@ -1,6 +1,10 @@
 # ASW_API
 
-An Issue tracker API for ASW course. UPC
+An Issue tracker API for ASW course from UPC university.
+
+## Heroku app URL
+
+[Issue Tracker API](https://asw-api.herokuapp.com/)
 
 ## Getting Started
 
@@ -23,7 +27,8 @@ The project uses these following packages. All in the requeriments.txt file for 
 ```
 ## Built With
 
-* [django](https://www.djangoproject.com/) - The web framework used
+* [Django](https://www.djangoproject.com/) - The web framework used
+* [Heroku](https://dashboard.heroku.com/) - Cloud Application where is deployed the app
 
 ## Authors
 
@@ -31,7 +36,6 @@ The project uses these following packages. All in the requeriments.txt file for 
 * **Jessica Sobreviela** - [jessicasobreviela](https://github.com/jessicasobreviela)
 * **Jonathan Nebot** - [jonator8](https://github.com/jonator8)
 * **David Marin** - [DuveD](https://github.com/DuveD)
-
 
 
 
