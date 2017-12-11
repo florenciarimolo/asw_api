@@ -260,7 +260,7 @@ paths:
           description: 'ID of the attachment issue.'
           in: path
           required: true
-        - name: file
+        - name: datafile
           in: formData
           description: The uploaded file data
           required: true

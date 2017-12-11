@@ -209,15 +209,9 @@ class AttachmentList(generics.ListCreateAPIView):
                         issue=issue)
 
 
-class AttachmentDetail(genericsx.RetrieveUpdateDestroyAPIView):
+class AttachmentDetail(generics.RetrieveDestroyAPIView):
     queryset = Attachment.objects.all()
     serializer_class = AttachmentSerializer
-
-    def put(self, request, *args, **kwargs):
-        attachment = Attachment.objects.get(id=self.kwargs.get('pk'))
-        if has_update_or_destroy_object_permission(request, attachment):
-            return self.update(request, *args, **kwargs)
-        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
 
     def delete(self, request, *args, **kwargs):
         attachment = Attachment.objects.get(id=self.kwargs.get('pk'))
