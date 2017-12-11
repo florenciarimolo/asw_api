@@ -42,7 +42,19 @@ paths:
           required: false
         - type: string
           name: priority
-          description: string of priority to sort by.
+          description: 'string of priority to sort by.'
+          in: query
+        - type: string
+          name: status
+          description: 'string of status to sort by.'
+          in: query
+        - type: string
+          name: assignee
+          description: 'string of assignee to sort by.'
+          in: query
+        - type: string
+          name: kind
+          description: 'string of kind to sort by.'
           in: query
       responses:
         '200':
@@ -61,10 +73,20 @@ paths:
             type: object
             properties:
               kind:
+                enum: [
+                  "Bug",
+                  "Funcionality",
+                  "Proposal",
+                  "Task"
+                  ]
                 type: string
                 description: 'Issue kind.'
               priority:
-                type: string
+                enum: [
+                  "Blocking",
+                  "Minor",
+                  "Major"
+                  ]
                 description: 'Issue priority.'
               assignee:
                 type: string
@@ -260,18 +282,17 @@ paths:
           description: 'ID of the attachment issue.'
           in: path
           required: true
-        - name: datafile
+        - name: file
           in: formData
           description: The uploaded file data
           required: true
           type: file
-        - name: data
       responses:
         '201':
           description: 'POST method for update'
   '/v1/issues/{id}/vote/':
     post:
-      operationId: issues_comments_create
+      operationId: issues_vote_create
       tags:
         - v1
       security:
@@ -289,7 +310,7 @@ paths:
           description: 'POST method for vote an issue'
   '/v1/issues/{id}/unvote/':
     delete:
-      operationId: issues_delete
+      operationId: issues_vote_delete
       tags:
         - v1
       security:
@@ -466,7 +487,7 @@ paths:
           description: 'GET method for all users.'
   '/v1/users/watches':
     get:
-      operationId: users_read
+      operationId: users_watch_read
       tags:
         - v1
       security:
@@ -503,7 +524,7 @@ paths:
           description: 'GET method for an specific User.'
   '/v1/user/watch/{id}/':
     post:
-      operationId: issues_vote_create
+      operationId: issues_watch_create
       tags:
         - v1
       security:
@@ -521,7 +542,7 @@ paths:
           description: 'POST method for watch an issue'
   '/v1/user/unwatch/{id}/':
     delete:
-      operationId: issues_vote_delete
+      operationId: issues_watch_delete
       tags:
         - v1
       security:
