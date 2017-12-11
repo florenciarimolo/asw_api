@@ -37,9 +37,5 @@ The project uses these following packages. All in the requeriments.txt file for 
 * **Jonathan Nebot** - [jonator8](https://github.com/jonator8)
 * **David Marin** - [DuveD](https://github.com/DuveD)
 
-## Heroku app URL
-
-[Issue Tracker API](https://asw-api.herokuapp.com/)
-
 
 
