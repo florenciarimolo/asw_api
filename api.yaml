@@ -402,6 +402,47 @@ paths:
       responses:
         '204':
           description: 'DELETE comment method.'
+  '/v1/issues/{issue_id}/attachments/{id}':
+    get:
+      operationId: issues_attachments_read
+      tags:
+        - v1
+      security:
+        - APIKeyHeader: []
+      parameters:
+        - type: string
+          name: issue_id
+          description: 'Issue ID of the attachment.'
+          in: path
+          required: true
+        - type: integer
+          name: id
+          description: 'A unique integer value identifying this attachment.'
+          in: path
+          required: true
+      responses:
+        '200':
+          description: 'GET method for an specific attachment on an issue.'
+    delete:
+      operationId: issues_attachment_delete
+      tags:
+        - v1
+      security:
+        - APIKeyHeader: []
+      parameters:
+        - type: string
+          name: issue_id
+          description: 'Issue ID of the attachment.'
+          in: path
+          required: true
+        - type: integer
+          name: id
+          description: 'A unique integer value identifying this attachment.'
+          in: path
+          required: true
+      responses:
+        '204':
+          description: 'DELETE attachment method.'
   /v1/users/:
     get:
       operationId: users_list
