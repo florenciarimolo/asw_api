@@ -94,9 +94,6 @@ paths:
               title:
                 type: string
                 description: 'Issue title.'
-              votes:
-                type: integer
-                description: 'Issue votes (it is irrelevant). Votes are stored on the db.'
               status:
                 enum: [
                   "New",
@@ -487,7 +484,7 @@ paths:
           description: 'GET method for all users.'
   '/v1/users/watches':
     get:
-      operationId: users_watch_read
+      operationId: users_watches_read
       tags:
         - v1
       security:
