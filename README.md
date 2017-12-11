@@ -1,4 +1,4 @@
-# ASW_API
+# Issue Tracker API
 
 An Issue tracker API for ASW course from UPC university.
 
@@ -8,7 +8,7 @@ An Issue tracker API for ASW course from UPC university.
 
 ## Getting Started
 
-This API was deployt wiht pyton using django framework.
+This API has been developed using Django REST Framework.
 
 ### Prerequisites
 
