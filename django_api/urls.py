@@ -28,7 +28,7 @@ schema_view = get_swagger_view(title='Issue Tracker API')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^accounts/logout/$', logout, {'next_page': '/'}),
+    url(r'^accounts/logout/$', logout, {'next_page':'/'}),
     url(r'^accounts/', include('allauth.urls')),
     url(settings.API_BASE_URL, include('asw_api.urls')),
     url(r'^$', schema_view),
