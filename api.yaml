@@ -12,7 +12,7 @@ securityDefinitions:
     in: header
     name: Authorization
 paths:
-  /v1/:
+  '/v1/':
     get:
       operationId: list
       tags:
@@ -22,7 +22,7 @@ paths:
       responses:
         '200':
           description: 'Base URL Page. This method shows a view whit Users and Issues.'
-  /v1/issues/:
+  '/v1/issues/':
     get:
       operationId: issues_list
       tags:
@@ -461,7 +461,7 @@ paths:
       responses:
         '204':
           description: 'DELETE attachment method.'
-  /v1/users/:
+  '/v1/users/':
     get:
       operationId: users_list
       tags:
