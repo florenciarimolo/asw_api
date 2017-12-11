@@ -72,9 +72,6 @@ paths:
               title:
                 type: string
                 description: 'Issue title.'
-              votes:
-                type: integer
-                description: 'Issue votes (it is irrelevant). Votes are stored on the db.'
               status:
                 enum: [
                   "New",
@@ -265,13 +262,12 @@ paths:
           description: The uploaded file data
           required: true
           type: file
-        - name: data
       responses:
         '201':
           description: 'POST method for update'
   '/v1/issues/{id}/vote/':
     post:
-      operationId: issues_comments_create
+      operationId: issues_vote_create
       tags:
         - v1
       security:
@@ -289,7 +285,7 @@ paths:
           description: 'POST method for vote an issue'
   '/v1/issues/{id}/unvote/':
     delete:
-      operationId: issues_delete
+      operationId: issues_vote_delete
       tags:
         - v1
       security:
@@ -466,7 +462,7 @@ paths:
           description: 'GET method for all users.'
   '/v1/users/watches':
     get:
-      operationId: users_read
+      operationId: users_watches_read
       tags:
         - v1
       security:
@@ -503,7 +499,7 @@ paths:
           description: 'GET method for an specific User.'
   '/v1/user/watch/{id}/':
     post:
-      operationId: issues_vote_create
+      operationId: issues_watch_create
       tags:
         - v1
       security:
@@ -521,7 +517,7 @@ paths:
           description: 'POST method for watch an issue'
   '/v1/user/unwatch/{id}/':
     delete:
-      operationId: issues_vote_delete
+      operationId: issues_watch_delete
       tags:
         - v1
       security:
