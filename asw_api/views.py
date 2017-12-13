@@ -192,7 +192,7 @@ class Watch(generics.CreateAPIView):
     serializer_class = WatchSerializer
 
     def create(self, request, *args, **kwargs):
-        issue_id = self.kwargs.get('pk')
+        issue_id = self.kwargs.get('issue_id')
         issue = Issues.objects.get(id=issue_id)
         username = self.request.user
         try:
@@ -207,7 +207,7 @@ class UnWatch(generics.DestroyAPIView):
     serializer_class = UnWatchSerializer
 
     def delete(self, request, *args, **kwargs):
-        issue_id = self.kwargs.get('pk')
+        issue_id = self.kwargs.get('issue_id')
         issue = Issues.objects.get(id=issue_id)
         username = self.request.user
         try:
