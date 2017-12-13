@@ -38,7 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
         if request is not None and request.user and request.user.username == obj.username:
             user_id = obj.id
             data = Token.objects.get(user_id=user_id).key
-        return data
+        return 'Token ' + data
 
     class Meta:
         model = User
