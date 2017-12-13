@@ -17,7 +17,7 @@ urlpatterns = [
 
     url(r'^user/watch/(?P<issue_id>[0-9]+)/$', views.Watch.as_view(), name='watch'),
     url(r'^user/unwatch/(?P<issue_id>[0-9]+)/$', views.UnWatch.as_view(), name='unwatch'),
-    url(r'^user/watches/$', views.UserWatchesList.as_view(), name='user_watches-list'),
+    url(r'^user/watches/$', views.UserWatchesList.as_view(), name='user-watches-list'),
 
     url(r'^issues/(?P<pk>[0-9]+)/attachments/$', views.AttachmentList.as_view(), name='attachment-list'),
     url(r'^issues/(?P<issue_id>[0-9]+)/attachments/(?P<pk>[0-9]+)$', views.AttachmentDetail.as_view(), name='attachment-detail'),

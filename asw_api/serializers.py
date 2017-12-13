@@ -23,7 +23,11 @@ class UserSerializer(serializers.ModelSerializer):
         return imge_url
 
     def get_watches(self, obj):
-        return IssuesWaches.objects.filter(username=obj.username).count()
+        request = self.context.get('request', None)
+        format = self.context.get('format', None)
+        if request is not None and request.user and request.user.username == obj.username:
+            return reverse('user-watches-list', request=request, format=format)
+        return None
 
     def get_href(self, obj):
         request = self.context.get('request', None)
