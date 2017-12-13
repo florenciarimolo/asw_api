@@ -1,8 +1,8 @@
 swagger: '2.0'
 info:
-  title: 'Issue Tracker API'
-  description: 'Swagger page form for all methods in the Issue Tracker API'
-  version: 'v1'
+  title: Issue Tracker API
+  description: Swagger page form for all methods in the Issue Tracker API
+  version: v1
 host: asw-api.herokuapp.com
 schemes:
   - https
@@ -12,7 +12,7 @@ securityDefinitions:
     in: header
     name: Authorization
 paths:
-  '/v1/':
+  /v1/:
     get:
       operationId: list
       tags:
@@ -21,8 +21,8 @@ paths:
         - APIKeyHeader: []
       responses:
         '200':
-          description: 'Base URL Page. This method shows a view whit Users and Issues.'
-  '/v1/issues/':
+          description: Base URL Page. This method shows a view whit Users and Issues.
+  /v1/issues/:
     get:
       operationId: issues_list
       tags:
@@ -32,33 +32,33 @@ paths:
       parameters:
         - type: integer
           name: limit
-          description: 'Number of results to return per page.'
+          description: Number of results to return per page.
           in: query
           required: false
         - type: integer
           name: offset
-          description: 'The initial index from which to return the results.'
+          description: The initial index from which to return the results.
           in: query
           required: false
         - type: string
           name: priority
-          description: 'string of priority to sort by.'
+          description: string of priority to sort by.
           in: query
         - type: string
           name: status
-          description: 'string of status to sort by.'
+          description: string of status to sort by.
           in: query
         - type: string
           name: assignee
-          description: 'string of assignee to sort by.'
+          description: string of assignee to sort by.
           in: query
         - type: string
           name: kind
-          description: 'string of kind to sort by.'
+          description: string of kind to sort by.
           in: query
       responses:
         '200':
-          description: 'GET method for all issues.'
+          description: GET method for all issues.
     post:
       operationId: issues_create
       tags:
@@ -73,35 +73,32 @@ paths:
             type: object
             properties:
               kind:
-                enum: [
-                  "Bug",
-                  "Funcionality",
-                  "Proposal",
-                  "Task"
-                  ]
+                enum:
+                  - Bug
+                  - Funcionality
+                  - Proposal
+                  - Task
                 type: string
-                description: 'Issue kind.'
+                description: Issue kind.
               priority:
-                enum: [
-                  "Blocking",
-                  "Minor",
-                  "Major"
-                  ]
-                description: 'Issue priority.'
+                enum:
+                  - Blocking
+                  - Minor
+                  - Major
+                description: Issue priority.
               assignee:
                 type: string
-                description: 'User issue assignee.'
+                description: User issue assignee.
               title:
                 type: string
-                description: 'Issue title.'
+                description: Issue title.
               status:
-                enum: [
-                  "New",
-                  "Open",
-                  "Closed"
-                  ]
+                enum:
+                  - New
+                  - Open
+                  - Closed
                 type: string
-                description: 'Issue status.'
+                description: Issue status.
             required:
               - title
               - kind
@@ -109,7 +106,9 @@ paths:
           in: body
       responses:
         '201':
-          description: 'POST method for an Issue.'
+          description: POST method for an Issue.
+        '400':
+          description: Invalid Issue.
   '/v1/issues/{id}/':
     get:
       operationId: issues_read
@@ -120,12 +119,14 @@ paths:
       parameters:
         - type: integer
           name: id
-          description: 'A unique integer value identifying this issues.'
+          description: A unique integer value identifying this issues.
           in: path
           required: true
       responses:
         '200':
-          description: 'GET method for an specific issue.'
+          description: GET method for an specific issue.
+        '404':
+          description: Issue not found.
     put:
       operationId: issues_update
       tags:
@@ -137,7 +138,7 @@ paths:
       parameters:
         - type: integer
           name: id
-          description: 'A unique integer value identifying this issues.'
+          description: A unique integer value identifying this issues.
           in: path
           required: true
         - name: data
@@ -146,22 +147,22 @@ paths:
             properties:
               kind:
                 type: string
-                description: 'Issue kind.'
+                description: Issue kind.
               priority:
                 type: string
-                description: 'Issue priority.'
+                description: Issue priority.
               assignee:
                 type: string
-                description: 'User issue assignee.'
+                description: User issue assignee.
               title:
                 type: string
-                description: 'Issue title.'
+                description: Issue title.
               votes:
                 type: integer
-                description: 'Issue votes (it is irrelevant). Votes are stored on the db.'
+                description: Issue votes (it is irrelevant). Votes are stored on the db.
               status:
                 type: string
-                description: 'Issue status.'
+                description: Issue status.
             required:
               - title
               - kind
@@ -169,7 +170,9 @@ paths:
           in: body
       responses:
         '200':
-          description: 'PUT method to update an specific issue.'
+          description: PUT method to update an specific issue.
+        '404':
+          description: Issue not found.
     delete:
       operationId: issues_delete
       tags:
@@ -184,7 +187,11 @@ paths:
           required: true
       responses:
         '204':
-          description: 'DELETE method for an specific issue.'
+          description: DELETE method for an specific issue.
+        '403':
+          description: The user has not access to delete the issue.
+        '404':
+          description: Issue not found.
   '/v1/issues/{id}/comments/':
     get:
       operationId: issues_comments_list
@@ -195,22 +202,24 @@ paths:
       parameters:
         - type: string
           name: id
-          description: 'ID of the comments issue.'
+          description: ID of the comments issue.
           in: path
           required: true
         - type: integer
           name: limit
-          description: 'Number of results to return per page.'
+          description: Number of results to return per page.
           in: query
           required: false
         - type: integer
           name: offset
-          description: 'The initial index from which to return the results.'
+          description: The initial index from which to return the results.
           in: query
           required: false
       responses:
         '200':
-          description: 'GET method for all comments on a issue.'
+          description: GET method for all comments on a issue.
+        '404':
+          description: Issue not found.
     post:
       operationId: issues_comments_create
       tags:
@@ -222,7 +231,7 @@ paths:
       parameters:
         - type: string
           name: id
-          description: 'ID of the comments issue.'
+          description: ID of the comments issue.
           in: path
           required: true
         - name: data
@@ -231,13 +240,15 @@ paths:
             properties:
               comment:
                 type: string
-                description: 'Data of creation or last editing.'
+                description: Data of creation or last editing.
             required:
               - comment
           in: body
       responses:
         '201':
-          description: 'POST method for update'
+          description: POST method for create.
+        '404':
+          description: Issue not found.
   '/v1/issues/{id}/attachments/':
     get:
       operationId: issues_attachments_list
@@ -248,22 +259,24 @@ paths:
       parameters:
         - type: string
           name: id
-          description: 'ID of the attachment issue.'
+          description: ID of the attachment issue.
           in: path
           required: true
         - type: integer
           name: limit
-          description: 'Number of results to return per page.'
+          description: Number of results to return per page.
           in: query
           required: false
         - type: integer
           name: offset
-          description: 'The initial index from which to return the results.'
+          description: The initial index from which to return the results.
           in: query
           required: false
       responses:
         '200':
-          description: 'GET method for all attachments on a issue.'
+          description: GET method for all attachments on a issue.
+        '404':
+          description: Issue not found.
     post:
       operationId: issues_attachments_create
       tags:
@@ -276,7 +289,7 @@ paths:
       parameters:
         - type: string
           name: id
-          description: 'ID of the attachment issue.'
+          description: ID of the attachment issue.
           in: path
           required: true
         - name: file
@@ -286,7 +299,9 @@ paths:
           type: file
       responses:
         '201':
-          description: 'POST method for update'
+          description: POST method for update.
+        '404':
+          description: Issue not found.
   '/v1/issues/{id}/vote/':
     post:
       operationId: issues_vote_create
@@ -299,12 +314,16 @@ paths:
       parameters:
         - type: string
           name: id
-          description: 'A unique integer value identifying this issues.'
+          description: A unique integer value identifying this issues.
           in: path
           required: true
       responses:
         '201':
-          description: 'POST method for vote an issue'
+          description: POST method for vote an issue.
+        '208':
+          description: Issue already voted.
+        '404':
+          description: Issue not found.
   '/v1/issues/{id}/unvote/':
     delete:
       operationId: issues_vote_delete
@@ -315,12 +334,16 @@ paths:
       parameters:
         - type: integer
           name: id
-          description: 'A unique integer value identifying this issues.'
+          description: A unique integer value identifying this issues.
           in: path
           required: true
       responses:
         '204':
-          description: 'DELETE method for unvote an issue.'
+          description: DELETE method for unvote an issue.
+        '208':
+          description: Issue already unvoted.
+        '404':
+          description: Issue not found.
   '/v1/issues/{id}/votes/':
     get:
       operationId: issue_votes_get
@@ -331,22 +354,24 @@ paths:
       parameters:
         - type: integer
           name: id
-          description: 'A unique integer value identifying this issues.'
+          description: A unique integer value identifying this issues.
           in: path
           required: true
         - type: integer
           name: limit
-          description: 'Number of results to return per page.'
+          description: Number of results to return per page.
           in: query
           required: false
         - type: integer
           name: offset
-          description: 'The initial index from which to return the results.'
+          description: The initial index from which to return the results.
           in: query
           required: false
       responses:
         '200':
-          description: 'GET method for all votes of an specific issue.'
+          description: GET method for all votes of an specific issue.
+        '404':
+          description: Issue not found.
   '/v1/issues/{issue_id}/comments/{id}':
     get:
       operationId: issues_comments_read
@@ -357,17 +382,19 @@ paths:
       parameters:
         - type: string
           name: issue_id
-          description: 'Issue ID of the comment.'
+          description: Issue ID of the comment.
           in: path
           required: true
         - type: integer
           name: id
-          description: 'A unique integer value identifying this comments.'
+          description: A unique integer value identifying this comments.
           in: path
           required: true
       responses:
         '200':
-          description: 'GET method for an specific comment on an issue.'
+          description: GET method for an specific comment on an issue.
+        '404':
+          description: Issue or Comment not found.
     put:
       operationId: issues_comments_update
       tags:
@@ -379,7 +406,7 @@ paths:
       parameters:
         - type: string
           name: issue_id
-          description: 'ID of the comments issue.'
+          description: ID of the comments issue.
           in: path
           required: true
         - type: integer
@@ -393,13 +420,17 @@ paths:
             properties:
               comment:
                 type: string
-                description: 'Data of creation or last editing.'
+                description: Data of creation or last editing.
             required:
               - comment
           in: body
       responses:
         '200':
-          description: 'PUT method to update an specific issue comment.'
+          description: PUT method to update an specific issue comment.
+        '403':
+          description: The issue has not access to update this comment.
+        '404':
+          description: Issue or Comment not found.
     delete:
       operationId: issues_comments_delete
       tags:
@@ -409,17 +440,21 @@ paths:
       parameters:
         - type: string
           name: issue_id
-          description: 'Issue ID of the comment.'
+          description: Issue ID of the comment.
           in: path
           required: true
         - type: integer
           name: id
-          description: 'A unique integer value identifying this comments.'
+          description: A unique integer value identifying this comments.
           in: path
           required: true
       responses:
         '204':
-          description: 'DELETE comment method.'
+          description: DELETE comment method.
+        '403':
+          description: The issue has not access to update this comment.
+        '404':
+          description: Issue or Comment not found.
   '/v1/issues/{issue_id}/attachments/{id}':
     get:
       operationId: issues_attachments_read
@@ -430,17 +465,19 @@ paths:
       parameters:
         - type: string
           name: issue_id
-          description: 'Issue ID of the attachment.'
+          description: Issue ID of the attachment.
           in: path
           required: true
         - type: integer
           name: id
-          description: 'A unique integer value identifying this attachment.'
+          description: A unique integer value identifying this attachment.
           in: path
           required: true
       responses:
         '200':
-          description: 'GET method for an specific attachment on an issue.'
+          description: GET method for an specific attachment on an issue.
+        '404':
+          description: Issue or Attachment not found.
     delete:
       operationId: issues_attachment_delete
       tags:
@@ -450,18 +487,22 @@ paths:
       parameters:
         - type: string
           name: issue_id
-          description: 'Issue ID of the attachment.'
+          description: Issue ID of the attachment.
           in: path
           required: true
         - type: integer
           name: id
-          description: 'A unique integer value identifying this attachment.'
+          description: A unique integer value identifying this attachment.
           in: path
           required: true
       responses:
         '204':
-          description: 'DELETE attachment method.'
-  '/v1/users/':
+          description: DELETE attachment method.
+        '403':
+          description: The issue has not access to delete this attachment.
+        '404':
+          description: Issue or Attachment not found.
+  /v1/users/:
     get:
       operationId: users_list
       tags:
@@ -471,38 +512,17 @@ paths:
       parameters:
         - type: integer
           name: limit
-          description: 'Number of results to return per page.'
+          description: Number of results to return per page.
           in: query
           required: false
         - type: integer
           name: offset
-          description: 'The initial index from which to return the results.'
+          description: The initial index from which to return the results.
           in: query
           required: false
       responses:
         '200':
-          description: 'GET method for all users.'
-  '/v1/users/watches':
-    get:
-      operationId: users_watches_read
-      tags:
-        - v1
-      security:
-        - APIKeyHeader: []
-      parameters:
-        - type: integer
-          name: limit
-          description: 'Number of results to return per page.'
-          in: query
-          required: false
-        - type: integer
-          name: offset
-          description: 'The initial index from which to return the results.'
-          in: query
-          required: false
-      responses:
-        '200':
-          description: 'GET method for all watches of all users. It has no real use.'
+          description: GET method for all users.
   '/v1/users/{username}':
     get:
       operationId: users_read
@@ -513,13 +533,15 @@ paths:
       parameters:
         - type: string
           name: username
-          description: 'User name of an specific User.'
+          description: User name of an specific User.
           in: path
           required: true
       responses:
         '200':
-          description: 'GET method for an specific User.'
-  '/v1/user/watch/{id}/':
+          description: GET method for an specific User.
+        '404':
+          description: User not found.
+  '/v1/issues/{id}/watch':
     post:
       operationId: issues_watch_create
       tags:
@@ -531,13 +553,17 @@ paths:
       parameters:
         - type: string
           name: id
-          description: 'A unique integer value identifying this issues.'
+          description: A unique integer value identifying this issues.
           in: path
           required: true
       responses:
         '201':
-          description: 'POST method for watch an issue'
-  '/v1/user/unwatch/{id}/':
+          description: POST method for watch an issue.
+        '208':
+          description: Issue already watched.
+        '404':
+          description: Issue not found.
+  '/v1/issues/{id}/unwatch':
     delete:
       operationId: issues_watch_delete
       tags:
@@ -547,13 +573,17 @@ paths:
       parameters:
         - type: integer
           name: id
-          description: 'A unique integer value identifying this issues.'
+          description: A unique integer value identifying this issues.
           in: path
           required: true
       responses:
         '204':
-          description: 'DELETE method for unwatch an issue.'
-  '/v1/user/watches/':
+          description: DELETE method for unwatch an issue.
+        '208':
+          description: Issue already unwatched.
+        '404':
+          description: Issue not found.
+  /v1/user/watches/:
     get:
       operationId: user_watches_list
       tags:
@@ -562,4 +592,4 @@ paths:
         - APIKeyHeader: []
       responses:
         '200':
-          description: 'GET method for all watches of an user.'
+          description: GET method for all watches of the current user.
