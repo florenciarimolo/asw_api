@@ -217,5 +217,5 @@ class AttachmentDetail(generics.RetrieveDestroyAPIView):
         attachment = Attachment.objects.get(id=self.kwargs.get('pk'))
         if has_update_or_destroy_object_permission(request, attachment):
             return self.destroy(request, *args, **kwargs)
-        return Response(FORBIDDEN_MESSAGE, status=status.HTTP_403_FORBIDDEN)
+        return Response(HttpResponseForbidden,)
 
