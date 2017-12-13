@@ -162,10 +162,12 @@ class Vote(generics.CreateAPIView):
             q1 = Q(issue_id=issue_id)
             q2 = Q(username=username)
             IssuesVotes.objects.get(q1 & q2)
-            return Response('Issue already voted.', status=208)
+            data = {'detail': 'Issue already voted.'}
+            return Response(data, status=208)
         except ObjectDoesNotExist:
             IssuesVotes.objects.create(issue_id=issue, username=username)
-            return Response('Issue voted.', status=status.HTTP_201_CREATED)
+            data = {'detail': 'Issue voted correctly.'}
+            return Response(data, status=status.HTTP_201_CREATED)
 
 
 class UnVote(generics.DestroyAPIView):
@@ -180,9 +182,11 @@ class UnVote(generics.DestroyAPIView):
             q1 = Q(issue_id=issue_id)
             q2 = Q(username=username)
             IssuesVotes.objects.get(q1 & q2).delete()
-            return Response('Issue unvoted.', status=204)
+            data = {'detail': 'Issue unvoted correctly.'}
+            return Response(data, status=204)
         except ObjectDoesNotExist:
-            return Response('Issue not voted.', status=208)
+            data = {'detail': 'Issue already unvoted.'}
+            return Response(data, status=208)
 
 
 class IssueVotesList(generics.ListAPIView):
@@ -207,10 +211,12 @@ class Watch(generics.CreateAPIView):
             q1 = Q(issue_id=issue_id)
             q2 = Q(username=username)
             IssuesWaches.objects.get(q1 & q2)
-            return Response('Issue already watched.', status=208)
+            data = {'detail': 'Issue already watched.'}
+            return Response(data, status=208)
         except ObjectDoesNotExist:
             IssuesWaches.objects.create(issue_id=issue, username=username)
-            return Response('Issue watched correctly.', status=status.HTTP_201_CREATED)
+            data = {'detail': 'Issue watched correctly.'}
+            return Response(data, status=status.HTTP_201_CREATED)
 
 
 class UnWatch(generics.DestroyAPIView):
@@ -225,9 +231,11 @@ class UnWatch(generics.DestroyAPIView):
             q1 = Q(issue_id=issue_id)
             q2 = Q(username=username)
             IssuesWaches.objects.get(q1 & q2).delete()
-            return Response('Issue unwatched.', status=status.HTTP_204_NO_CONTENT)
+            data = {'detail': 'Issue unwatched correctly.'}
+            return Response(data, status=status.HTTP_204_NO_CONTENT)
         except ObjectDoesNotExist:
-            return Response('Issue not watched.', status=208)
+            data = {'detail': 'Issue already unwatched.'}
+            return Response(data, status=208)
 
 
 class UserWatchesList(generics.ListAPIView):
