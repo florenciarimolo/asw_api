@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import serializers
 from django.core.validators import MinValueValidator, MaxValueValidator
 from rest_framework.authtoken.models import Token
@@ -109,10 +110,70 @@ class IssueSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     attachments_url = serializers.SerializerMethodField()
     attachments = AttachmentSerializer(many=True, read_only=True)
-    #owner = serializers.ReadOnlyField(source='owner.username')
     votes = serializers.SerializerMethodField()
     watchers = serializers.SerializerMethodField()
     _links = serializers.SerializerMethodField()
+    vote = serializers.SerializerMethodField()
+    unvote = serializers.SerializerMethodField()
+    watch = serializers.SerializerMethodField()
+    unwatch = serializers.SerializerMethodField()
+
+    def get_vote(self, obj):
+        request = self.context.get('request', None)
+        format = self.context.get('format', None)
+        if request is not None and request.user:
+            try:
+                q1 = Q(issue_id=obj.id)
+                q2 = Q(username=request.user.username)
+                IssuesVotes.objects.get(q1 & q2)
+                return None
+            except IssuesVotes.DoesNotExist:
+                kwargs = {'pk': obj.id}
+                return reverse('vote', request=request, format=format, kwargs=kwargs)
+        return None
+
+    def get_unvote(self, obj):
+        request = self.context.get('request', None)
+        format = self.context.get('format', None)
+        if request is not None and request.user:
+            try:
+                q1 = Q(issue_id=obj.id)
+                q2 = Q(username=request.user.username)
+                IssuesVotes.objects.get(q1 & q2)
+                kwargs = {'pk': obj.id}
+                return reverse('unvote', request=request, format=format, kwargs=kwargs)
+            except IssuesVotes.DoesNotExist:
+                return None
+
+        return None
+
+    def get_watch(self, obj):
+        request = self.context.get('request', None)
+        format = self.context.get('format', None)
+        if request is not None and request.user:
+            try:
+                q1 = Q(issue_id=obj.id)
+                q2 = Q(username=request.user.username)
+                IssuesWaches.objects.get(q1 & q2)
+                return None
+            except IssuesWaches.DoesNotExist:
+                kwargs = {'pk': obj.id}
+                return reverse('watch', request=request, format=format, kwargs=kwargs)
+        return None
+
+    def get_unwatch(self, obj):
+        request = self.context.get('request', None)
+        format = self.context.get('format', None)
+        if request is not None and request.user:
+            try:
+                q1 = Q(issue_id=obj.id)
+                q2 = Q(username=request.user.username)
+                IssuesWaches.objects.get(q1 & q2)
+                kwargs = {'pk': obj.id}
+                return reverse('unwatch', request=request, format=format, kwargs=kwargs)
+            except IssuesWaches.DoesNotExist:
+                return None
+        return None
 
     def get_votes(self, obj):
         return IssuesVotes.objects.filter(issue_id=obj.id).count()
@@ -146,14 +207,18 @@ class IssueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Issues
-        fields = ('href',
-                  'id',
+        fields = ('id',
+                  'href',
                   'title',
                   'kind',
                   'priority',
                   'status',
                   'votes',
+                  'vote',
+                  'unvote',
                   'watchers',
+                  'watch',
+                  'unwatch',
                   'assignee',
                   'created_at',
                   'updated_at',
@@ -173,6 +238,7 @@ class VoteSerializer(serializers.ModelSerializer):
         model = IssuesVotes
         fields = ()
 
+
 class UnVoteSerializer(serializers.ModelSerializer):
 
     def get_url(self, obj):
@@ -182,6 +248,7 @@ class UnVoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = IssuesVotes
         fields = ()
+
 
 class IssueVotesSerializer(serializers.ModelSerializer):
 
@@ -193,6 +260,7 @@ class IssueVotesSerializer(serializers.ModelSerializer):
         model = IssuesVotes
         fields = ('username',)
 
+
 class WatchSerializer(serializers.ModelSerializer):
 
     def get_url(self, obj):
@@ -202,6 +270,7 @@ class WatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = IssuesWaches
         fields = ()
+
 
 class UnWatchSerializer(serializers.ModelSerializer):
 

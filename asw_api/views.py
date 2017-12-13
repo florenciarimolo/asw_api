@@ -10,7 +10,7 @@ from django.db import OperationalError
 from django.http import HttpResponse
 from django.http import Http404, HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework import views
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
@@ -151,6 +151,7 @@ class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
 
 
 class Vote(generics.CreateAPIView):
+    # TODO 404 si la issue no existe
     serializer_class = VoteSerializer
 
     def create(self, request, *args, **kwargs):
@@ -158,14 +159,17 @@ class Vote(generics.CreateAPIView):
         issue = Issues.objects.get(id=issue_id)
         username = self.request.user
         try:
-            IssuesVotes.objects.get(issue_id=issue, username=username)
-            return HttpResponse('Issue already voted.', status=208)
+            q1 = Q(issue_id=issue_id)
+            q2 = Q(username=username)
+            IssuesVotes.objects.get(q1 & q2)
+            return Response('Issue already voted.', status=208)
         except ObjectDoesNotExist:
             IssuesVotes.objects.create(issue_id=issue, username=username)
-            return HttpResponse('Issue voted.', status=201)
+            return Response('Issue voted.', status=status.HTTP_201_CREATED)
 
 
 class UnVote(generics.DestroyAPIView):
+    # TODO 404 si la issue no existe
     serializer_class = UnVoteSerializer
 
     def delete(self, request, *args, **kwargs):
@@ -173,13 +177,16 @@ class UnVote(generics.DestroyAPIView):
         issue = Issues.objects.get(id=issue_id)
         username = self.request.user
         try:
-            IssuesVotes.objects.get(issue_id=issue, username=username).delete()
-            return HttpResponse('Issue unvoted.', status=204)
+            q1 = Q(issue_id=issue_id)
+            q2 = Q(username=username)
+            IssuesVotes.objects.get(q1 & q2).delete()
+            return Response('Issue unvoted.', status=204)
         except ObjectDoesNotExist:
-            return HttpResponse('Issue not voted.', status=208)
+            return Response('Issue not voted.', status=208)
 
 
 class IssueVotesList(generics.ListAPIView):
+    # TODO 404 si la issue no existe
     serializer_class = IssueVotesSerializer
     queryset = IssuesWaches.objects.all()
 
@@ -189,32 +196,38 @@ class IssueVotesList(generics.ListAPIView):
 
 
 class Watch(generics.CreateAPIView):
+    # TODO 404 si la issue no existe
     serializer_class = WatchSerializer
 
     def create(self, request, *args, **kwargs):
-        issue_id = self.kwargs.get('issue_id')
+        issue_id = self.kwargs.get('pk')
         issue = Issues.objects.get(id=issue_id)
         username = self.request.user
         try:
-            IssuesWaches.objects.get(issue_id=issue, username=username)
-            return HttpResponse('Issue already watched.', status=208)
+            q1 = Q(issue_id=issue_id)
+            q2 = Q(username=username)
+            IssuesWaches.objects.get(q1 & q2)
+            return Response('Issue already watched.', status=208)
         except ObjectDoesNotExist:
             IssuesWaches.objects.create(issue_id=issue, username=username)
-            return HttpResponse('Issue watched.', status=201)
+            return Response('Issue watched correctly.', status=status.HTTP_201_CREATED)
 
 
 class UnWatch(generics.DestroyAPIView):
+    # TODO 404 si la issue no existe
     serializer_class = UnWatchSerializer
 
     def delete(self, request, *args, **kwargs):
-        issue_id = self.kwargs.get('issue_id')
+        issue_id = self.kwargs.get('pk')
         issue = Issues.objects.get(id=issue_id)
         username = self.request.user
         try:
-            IssuesWaches.objects.get(issue_id=issue, username=username).delete()
-            return HttpResponse('Issue unwatched.', status=204)
+            q1 = Q(issue_id=issue_id)
+            q2 = Q(username=username)
+            IssuesWaches.objects.get(q1 & q2).delete()
+            return Response('Issue unwatched.', status=status.HTTP_204_NO_CONTENT)
         except ObjectDoesNotExist:
-            return HttpResponse('Issue not watched.', status=208)
+            return Response('Issue not watched.', status=208)
 
 
 class UserWatchesList(generics.ListAPIView):
@@ -227,6 +240,7 @@ class UserWatchesList(generics.ListAPIView):
 
 
 class AttachmentList(generics.ListCreateAPIView):
+    # TODO 404 si la issue no existe
     queryset = Attachment.objects.all()
     serializer_class = AttachmentSerializer
     parser_classes = (MultiPartParser, FormParser,)
@@ -244,6 +258,7 @@ class AttachmentList(generics.ListCreateAPIView):
 
 
 class AttachmentDetail(generics.RetrieveDestroyAPIView):
+    # TODO 404 si la issue o el attachment no existen
     queryset = Attachment.objects.all()
     serializer_class = AttachmentSerializer
 
