@@ -79,22 +79,23 @@ class IssueDetail(genericsx.RetrieveUpdateDestroyAPIView):
     serializer_class = IssueSerializer
 
     def put(self, request, *args, **kwargs):
-        try:
-            issue = Issues.objects.get(id=self.kwargs.get('pk'))
-        except Issues.DoesNotExist:
-            raise Http404
+        issue = self.get_issue()
         if has_update_or_destroy_object_permission(request, issue):
             return self.update(request, *args, **kwargs)
         raise HttpResponseForbidden
 
     def delete(self, request, *args, **kwargs):
+        issue = self.get_issue()
+        if has_update_or_destroy_object_permission(request, issue):
+            return self.destroy(request, *args, **kwargs)
+        raise HttpResponseForbidden
+
+    def get_issue(self):
         try:
             issue = Issues.objects.get(id=self.kwargs.get('pk'))
         except Issues.DoesNotExist:
             raise Http404
-        if has_update_or_destroy_object_permission(request, issue):
-            return self.destroy(request, *args, **kwargs)
-        raise HttpResponseForbidden
+        return issue
 
 
 class CommentsList(generics.ListCreateAPIView):
@@ -102,6 +103,10 @@ class CommentsList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         issue_id = self.kwargs.get('pk')
+        try:
+            Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist:
+            raise Http404
         return Comments.objects.filter(issue_id=issue_id)
 
     def perform_create(self, serializer):
@@ -114,14 +119,32 @@ class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
     queryset = Comments.objects.all()
     serializer_class = CommentSerializer
 
+    def get_comment(self):
+        try:
+            q1 = Q(id=self.kwargs.get('pk'))
+            q2 = Q(issue_id=self.kwargs.get('issue_id'))
+            comment = Comments.objects.get(q1 & q2)
+        except Comments.DoesNotExist:
+            raise Http404
+        return comment
+
+    def get(self, request, *args, **kwargs):
+        try:
+            q1 = Q(id=self.kwargs.get('pk'))
+            q2 = Q(issue_id=self.kwargs.get('issue_id'))
+            Comments.objects.get(q1 & q2)
+        except Comments.DoesNotExist:
+            raise Http404
+        return self.retrieve(request, *args, **kwargs)
+
     def put(self, request, *args, **kwargs):
-        comment = Comments.objects.get(id=self.kwargs.get('pk'))
+        comment = self.get_comment()
         if has_update_or_destroy_object_permission(request, comment):
             return self.update(request, *args, **kwargs)
         raise HttpResponseForbidden
 
     def delete(self, request, *args, **kwargs):
-        comment = Comments.objects.get(id=self.kwargs.get('pk'))
+        comment = self.get_comment()
         if has_update_or_destroy_object_permission(request, comment):
             return self.destroy(request, *args, **kwargs)
         raise HttpResponseForbidden
