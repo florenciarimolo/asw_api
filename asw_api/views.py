@@ -24,6 +24,7 @@ from asw_api.serializers import VoteSerializer, UnVoteSerializer, IssueVotesSeri
 from asw_api.serializers import WatchSerializer, UnWatchSerializer, UserWatchesSerializer
 from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches, Attachment
 
+
 def has_update_or_destroy_object_permission(request, obj):
     if request.user.is_authenticated:
         return obj.owner.username == request.user.username
@@ -52,12 +53,14 @@ class UsersList(generics.ListAPIView):
     serializer_class = UserSerializer
 
 
-class UserDetail(generics.ListAPIView):
+class UserDetail(generics.RetrieveAPIView):
     serializer_class = UserSerializer
+    lookup_field = 'username'
 
     def get_queryset(self):
         username = self.kwargs.get('username')
-        return User.objects.filter(username=username)
+        queryset = User.objects.filter(username=username)
+        return queryset
 
 
 class IssuesList(generics.ListCreateAPIView):
@@ -128,11 +131,12 @@ class Vote(generics.CreateAPIView):
         issue = Issues.objects.get(id=issue_id)
         username = self.request.user
         try:
-            IssuesVotes.objects.get(issue_id=issue,username=username)
+            IssuesVotes.objects.get(issue_id=issue, username=username)
             return HttpResponse('Issue already voted.', status=208)
         except ObjectDoesNotExist:
-            IssuesVotes.objects.create(issue_id=issue,username=username)
-            return HttpResponse('Issue voted.',status=201)
+            IssuesVotes.objects.create(issue_id=issue, username=username)
+            return HttpResponse('Issue voted.', status=201)
+
 
 class UnVote(generics.DestroyAPIView):
     serializer_class = UnVoteSerializer
@@ -142,10 +146,11 @@ class UnVote(generics.DestroyAPIView):
         issue = Issues.objects.get(id=issue_id)
         username = self.request.user
         try:
-            IssuesVotes.objects.get(issue_id=issue,username=username).delete()
+            IssuesVotes.objects.get(issue_id=issue, username=username).delete()
             return HttpResponse('Issue unvoted.', status=204)
         except ObjectDoesNotExist:
             return HttpResponse('Issue not voted.', status=208)
+
 
 class IssueVotesList(generics.ListAPIView):
     serializer_class = IssueVotesSerializer
@@ -164,11 +169,12 @@ class Watch(generics.CreateAPIView):
         issue = Issues.objects.get(id=issue_id)
         username = self.request.user
         try:
-            IssuesWaches.objects.get(issue_id=issue,username=username)
+            IssuesWaches.objects.get(issue_id=issue, username=username)
             return HttpResponse('Issue already watched.', status=208)
         except ObjectDoesNotExist:
-            IssuesWaches.objects.create(issue_id=issue,username=username)
-            return HttpResponse('Issue watched.',status=201)
+            IssuesWaches.objects.create(issue_id=issue, username=username)
+            return HttpResponse('Issue watched.', status=201)
+
 
 class UnWatch(generics.DestroyAPIView):
     serializer_class = UnWatchSerializer
@@ -178,10 +184,11 @@ class UnWatch(generics.DestroyAPIView):
         issue = Issues.objects.get(id=issue_id)
         username = self.request.user
         try:
-            IssuesWaches.objects.get(issue_id=issue,username=username).delete()
+            IssuesWaches.objects.get(issue_id=issue, username=username).delete()
             return HttpResponse('Issue unwatched.', status=204)
         except ObjectDoesNotExist:
             return HttpResponse('Issue not watched.', status=208)
+
 
 class UserWatchesList(generics.ListAPIView):
     serializer_class = UserWatchesSerializer
@@ -217,5 +224,4 @@ class AttachmentDetail(generics.RetrieveDestroyAPIView):
         attachment = Attachment.objects.get(id=self.kwargs.get('pk'))
         if has_update_or_destroy_object_permission(request, attachment):
             return self.destroy(request, *args, **kwargs)
-        return Response(HttpResponseForbidden,)
-
+        return Response(HttpResponseForbidden, )
