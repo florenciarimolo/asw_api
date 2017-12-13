@@ -79,15 +79,19 @@ class IssueDetail(genericsx.RetrieveUpdateDestroyAPIView):
     serializer_class = IssueSerializer
 
     def put(self, request, *args, **kwargs):
-        issue = Issues.objects.get(id=self.kwargs.get('pk'))
-        print(issue.owner.username)
+        try:
+            issue = Issues.objects.get(id=self.kwargs.get('pk'))
+        except Issues.DoesNotExist:
+            raise Http404
         if has_update_or_destroy_object_permission(request, issue):
             return self.update(request, *args, **kwargs)
         raise HttpResponseForbidden
 
     def delete(self, request, *args, **kwargs):
-        issue = Issues.objects.get(id=self.kwargs.get('pk'))
-        print(issue.owner.username)
+        try:
+            issue = Issues.objects.get(id=self.kwargs.get('pk'))
+        except Issues.DoesNotExist:
+            raise Http404
         if has_update_or_destroy_object_permission(request, issue):
             return self.destroy(request, *args, **kwargs)
         raise HttpResponseForbidden
