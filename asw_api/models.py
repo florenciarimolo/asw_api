@@ -19,7 +19,7 @@ class Issues(models.Model):
     status = models.TextField(blank=True) #default='New'
     assignee = models.ForeignKey(User, related_name='assignee', to_field='username', null=True)
     owner = models.ForeignKey(User, related_name='owner', to_field='username', null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 
 

@@ -151,12 +151,14 @@ class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
 
 
 class Vote(generics.CreateAPIView):
-    # TODO 404 si la issue no existe
     serializer_class = VoteSerializer
 
     def create(self, request, *args, **kwargs):
         issue_id = self.kwargs.get('pk')
-        issue = Issues.objects.get(id=issue_id)
+
+        try: issue = Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist: raise Http404
+
         username = self.request.user
         try:
             q1 = Q(issue_id=issue_id)
@@ -171,12 +173,14 @@ class Vote(generics.CreateAPIView):
 
 
 class UnVote(generics.DestroyAPIView):
-    # TODO 404 si la issue no existe
     serializer_class = UnVoteSerializer
 
     def delete(self, request, *args, **kwargs):
         issue_id = self.kwargs.get('pk')
-        issue = Issues.objects.get(id=issue_id)
+
+        try: Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist: raise Http404
+
         username = self.request.user
         try:
             q1 = Q(issue_id=issue_id)
@@ -190,22 +194,27 @@ class UnVote(generics.DestroyAPIView):
 
 
 class IssueVotesList(generics.ListAPIView):
-    # TODO 404 si la issue no existe
     serializer_class = IssueVotesSerializer
     queryset = IssuesWaches.objects.all()
 
     def get_queryset(self):
         issue_id = self.kwargs.get('pk')
+
+        try: Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist: raise Http404
+
         return IssuesVotes.objects.filter(issue_id=issue_id)
 
 
 class Watch(generics.CreateAPIView):
-    # TODO 404 si la issue no existe
     serializer_class = WatchSerializer
 
     def create(self, request, *args, **kwargs):
         issue_id = self.kwargs.get('pk')
-        issue = Issues.objects.get(id=issue_id)
+
+        try: issue = Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist: raise Http404
+
         username = self.request.user
         try:
             q1 = Q(issue_id=issue_id)
@@ -220,12 +229,14 @@ class Watch(generics.CreateAPIView):
 
 
 class UnWatch(generics.DestroyAPIView):
-    # TODO 404 si la issue no existe
     serializer_class = UnWatchSerializer
 
     def delete(self, request, *args, **kwargs):
         issue_id = self.kwargs.get('pk')
-        issue = Issues.objects.get(id=issue_id)
+
+        try: Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist: raise Http404
+
         username = self.request.user
         try:
             q1 = Q(issue_id=issue_id)
@@ -248,30 +259,43 @@ class UserWatchesList(generics.ListAPIView):
 
 
 class AttachmentList(generics.ListCreateAPIView):
-    # TODO 404 si la issue no existe
     queryset = Attachment.objects.all()
     serializer_class = AttachmentSerializer
     parser_classes = (MultiPartParser, FormParser,)
 
     def get_queryset(self):
         issue_id = self.kwargs.get('pk')
+
+        try: Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist: raise Http404
+
         return Attachment.objects.filter(issue=issue_id)
 
     def perform_create(self, serializer):
         issue_id = self.kwargs.get('pk')
-        issue = Issues.objects.get(id=issue_id)
+
+        try: issue = Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist:  raise Http404
+
         serializer.save(owner=self.request.user,
                         datafile=self.request.data.get('datafile'),
                         issue=issue)
 
 
 class AttachmentDetail(generics.RetrieveDestroyAPIView):
-    # TODO 404 si la issue o el attachment no existen
     queryset = Attachment.objects.all()
     serializer_class = AttachmentSerializer
 
     def delete(self, request, *args, **kwargs):
-        attachment = Attachment.objects.get(id=self.kwargs.get('pk'))
+        id = self.kwargs.get('pk')
+        issue_id = self.kwargs.get('issue_id')
+
+        try: Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist: raise Http404
+
+        try: attachment = Attachment.objects.get(id=id)
+        except Attachment.DoesNotExist: raise Http404
+
         if has_update_or_destroy_object_permission(request, attachment):
             return self.destroy(request, *args, **kwargs)
         return Response(HttpResponseForbidden, )
