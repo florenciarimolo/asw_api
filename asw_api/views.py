@@ -1,28 +1,25 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from collections import OrderedDict
-
-from django.db.models import Q
-from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
-from django.db import OperationalError
-from django.http import HttpResponse
-from django.http import Http404, HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import PermissionDenied
+from django.db import OperationalError
+from django.db.models import Q
+from django.http import Http404, HttpResponseForbidden
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework import views
 from rest_framework.authtoken.models import Token
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_extensions import generics as genericsx
-from rest_framework.parsers import FormParser, MultiPartParser
+from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches, Attachment
 from asw_api.serializers import IssueSerializer, UserSerializer, CommentSerializer, AttachmentSerializer
 from asw_api.serializers import VoteSerializer, UnVoteSerializer, IssueVotesSerializer
 from asw_api.serializers import WatchSerializer, UnWatchSerializer, UserWatchesSerializer
-from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches, Attachment
+from rest_extensions import generics as genericsx
 
 
 def has_update_or_destroy_object_permission(request, obj):
@@ -82,13 +79,13 @@ class IssueDetail(genericsx.RetrieveUpdateDestroyAPIView):
         issue = self.get_issue()
         if has_update_or_destroy_object_permission(request, issue):
             return self.update(request, *args, **kwargs)
-        raise HttpResponseForbidden
+        raise PermissionDenied
 
     def delete(self, request, *args, **kwargs):
         issue = self.get_issue()
         if has_update_or_destroy_object_permission(request, issue):
             return self.destroy(request, *args, **kwargs)
-        raise HttpResponseForbidden
+        raise PermissionDenied
 
     def get_issue(self):
         try:
@@ -130,9 +127,7 @@ class CommentDetail(genericsx.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, *args, **kwargs):
         try:
-            q1 = Q(id=self.kwargs.get('pk'))
-            q2 = Q(issue_id=self.kwargs.get('issue_id'))
-            Comments.objects.get(q1 & q2)
+            self.get_comment()
         except Comments.DoesNotExist:
             raise Http404
         return self.retrieve(request, *args, **kwargs)
@@ -156,8 +151,10 @@ class Vote(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         issue_id = self.kwargs.get('pk')
 
-        try: issue = Issues.objects.get(id=issue_id)
-        except Issues.DoesNotExist: raise Http404
+        try:
+            issue = Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist:
+            raise Http404
 
         username = self.request.user
         try:
@@ -178,8 +175,10 @@ class UnVote(generics.DestroyAPIView):
     def delete(self, request, *args, **kwargs):
         issue_id = self.kwargs.get('pk')
 
-        try: Issues.objects.get(id=issue_id)
-        except Issues.DoesNotExist: raise Http404
+        try:
+            Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist:
+            raise Http404
 
         username = self.request.user
         try:
@@ -200,8 +199,10 @@ class IssueVotesList(generics.ListAPIView):
     def get_queryset(self):
         issue_id = self.kwargs.get('pk')
 
-        try: Issues.objects.get(id=issue_id)
-        except Issues.DoesNotExist: raise Http404
+        try:
+            Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist:
+            raise Http404
 
         return IssuesVotes.objects.filter(issue_id=issue_id)
 
@@ -212,8 +213,10 @@ class Watch(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         issue_id = self.kwargs.get('pk')
 
-        try: issue = Issues.objects.get(id=issue_id)
-        except Issues.DoesNotExist: raise Http404
+        try:
+            issue = Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist:
+            raise Http404
 
         username = self.request.user
         try:
@@ -234,8 +237,10 @@ class UnWatch(generics.DestroyAPIView):
     def delete(self, request, *args, **kwargs):
         issue_id = self.kwargs.get('pk')
 
-        try: Issues.objects.get(id=issue_id)
-        except Issues.DoesNotExist: raise Http404
+        try:
+            Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist:
+            raise Http404
 
         username = self.request.user
         try:
@@ -266,16 +271,20 @@ class AttachmentList(generics.ListCreateAPIView):
     def get_queryset(self):
         issue_id = self.kwargs.get('pk')
 
-        try: Issues.objects.get(id=issue_id)
-        except Issues.DoesNotExist: raise Http404
+        try:
+            Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist:
+            raise Http404
 
         return Attachment.objects.filter(issue=issue_id)
 
     def perform_create(self, serializer):
         issue_id = self.kwargs.get('pk')
 
-        try: issue = Issues.objects.get(id=issue_id)
-        except Issues.DoesNotExist:  raise Http404
+        try:
+            issue = Issues.objects.get(id=issue_id)
+        except Issues.DoesNotExist:
+            raise Http404
 
         serializer.save(owner=self.request.user,
                         datafile=self.request.data.get('datafile'),
@@ -286,16 +295,25 @@ class AttachmentDetail(generics.RetrieveDestroyAPIView):
     queryset = Attachment.objects.all()
     serializer_class = AttachmentSerializer
 
+    def get_attachment(self):
+        try:
+            q1 = Q(id=self.kwargs.get('pk'))
+            q2 = Q(issue_id=self.kwargs.get('issue_id'))
+            att = Attachment.objects.get(q1 & q2)
+        except Attachment.DoesNotExist:
+            raise Http404
+        return att
+
+    def get(self, request, *args, **kwargs):
+        try:
+            self.get_attachment()
+        except Attachment.DoesNotExist:
+            raise Http404
+        return self.retrieve(request, *args, **kwargs)
+
     def delete(self, request, *args, **kwargs):
-        id = self.kwargs.get('pk')
-        issue_id = self.kwargs.get('issue_id')
+        att = self.get_attachment()
 
-        try: Issues.objects.get(id=issue_id)
-        except Issues.DoesNotExist: raise Http404
-
-        try: attachment = Attachment.objects.get(id=id)
-        except Attachment.DoesNotExist: raise Http404
-
-        if has_update_or_destroy_object_permission(request, attachment):
+        if has_update_or_destroy_object_permission(request, att):
             return self.destroy(request, *args, **kwargs)
-        return Response(HttpResponseForbidden, )
+        raise PermissionDenied
