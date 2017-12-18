@@ -7,16 +7,41 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
 
 
 # Create your models here.
 
+def validate_kind(value):
+    valid = ('Bug', 'Enhancement', 'Proposal', 'Task')
+    if value not in valid:
+        raise ValidationError(
+            _("'kind' field value must be 'Bug', 'Enhancement', 'Proposal' or 'Task'.")
+        )
+
+
+def validate_status(value):
+    valid = ('New', 'Open', 'Closed')
+    if value not in valid:
+        raise ValidationError(
+            _("'status' field value must be 'New', 'Open' or 'Closed'.")
+        )
+
+
+def validate_priority(value):
+    valid = ('Critical', 'Major', 'Minor', 'Trivial', 'Blocker')
+    if value not in valid:
+        raise ValidationError(
+            _("'priority' field value must be 'Critical', 'Major', 'Minor', 'Trivial', 'Blocker'.")
+        )
+
 
 class Issues(models.Model):
     title = models.TextField()
-    kind = models.CharField(max_length=11)
-    priority = models.CharField(max_length=8)
-    status = models.TextField(blank=True) #default='New'
+    kind = models.CharField(max_length=11, validators=[validate_kind])
+    priority = models.CharField(max_length=8, validators=[validate_priority])
+    status = models.TextField(blank=True, validators=[validate_status])  # default='New'
     assignee = models.ForeignKey(User, related_name='assignee', to_field='username', null=True)
     owner = models.ForeignKey(User, related_name='owner', to_field='username', null=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)

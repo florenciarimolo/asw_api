@@ -75,16 +75,18 @@ paths:
               kind:
                 enum:
                   - Bug
-                  - Funcionality
+                  - Enhancement
                   - Proposal
                   - Task
                 type: string
                 description: Issue kind.
               priority:
                 enum:
-                  - Blocking
+                  - Trivial
+                  - Blocker
                   - Minor
                   - Major
+                  - Critical
                 description: Issue priority.
               assignee:
                 type: string
