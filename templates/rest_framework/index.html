@@ -16,7 +16,7 @@
               {% endblock %}
             </span>
                     <ul class="navbar-left nav navbar-nav">
-                        <li><a href="/api">Home</a></li>
+                        <li><a href="/v1">Home</a></li>
                     </ul>
                     <ul class="nav navbar-nav pull-right">
                         {% block userlinks %}
@@ -24,7 +24,7 @@
                                 <ul class="nav navbar-nav navbar-right">
                                     {% if user.is_authenticated %}
                                         <li><a id="id_username"
-                                               href=/api/users/{% trans user.username %}>{% trans user.username %}</a>
+                                               href=/v1/users/{% trans user.username %}>{% trans user.username %}</a>
                                         </li>
                                         <li><a id="logout" href="/accounts/logout">
                                             <span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
