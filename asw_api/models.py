@@ -46,6 +46,7 @@ class Issues(models.Model):
     owner = models.ForeignKey(User, related_name='owner', to_field='username', null=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
+    description = models.TextField(blank=True)
 
 
 class Comments(models.Model):
