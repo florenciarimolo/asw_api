@@ -59,6 +59,7 @@ class UserSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     href = serializers.SerializerMethodField()
     _links = serializers.SerializerMethodField()
+    owner = serializers.ReadOnlyField(source='owner.username')
 
     def get_href(self, obj):
         request = self.context.get('request', None)
@@ -83,6 +84,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('href',
                   'id',
                   'comment',
+                  'owner',
                   'created_at',
                   'updated_at',
                   '_links',)
@@ -117,6 +119,7 @@ class IssueSerializer(serializers.ModelSerializer):
     unvote = serializers.SerializerMethodField()
     watch = serializers.SerializerMethodField()
     unwatch = serializers.SerializerMethodField()
+    owner = serializers.ReadOnlyField(source='owner.username')
 
     def get_vote(self, obj):
         request = self.context.get('request', None)
