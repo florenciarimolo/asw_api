@@ -60,6 +60,8 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = API_BASE_URL
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
+TIME_ZONE = 'Europe/Madrid'
+
 MIDDLEWARE_CLASSES = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',

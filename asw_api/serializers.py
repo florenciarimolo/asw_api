@@ -1,12 +1,12 @@
+import datetime
+from django.contrib.auth.models import User
 from django.db.models import Q
+from pytz import timezone
 from rest_framework import serializers
-from django.core.validators import MinValueValidator, MaxValueValidator
 from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 
 from asw_api.models import Issues, Comments, IssuesVotes, IssuesWaches, Attachment
-from django.contrib.auth.models import User
-from django.db import models
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -60,6 +60,15 @@ class CommentSerializer(serializers.ModelSerializer):
     href = serializers.SerializerMethodField()
     _links = serializers.SerializerMethodField()
     owner = serializers.ReadOnlyField(source='owner.username')
+    created_at = serializers.SerializerMethodField()
+    updated_at = serializers.SerializerMethodField()
+
+    def get_created_at(self, obj):
+        return obj.created_at.replace(tzinfo=timezone('UTC')).strftime('%Y-%m-%d %H:%M:%S')
+
+    def get_updated_at(self, obj):
+        return obj.updated_at.replace(tzinfo=timezone('UTC')).strftime('%Y-%m-%d %H:%M:%S')
+
 
     def get_href(self, obj):
         request = self.context.get('request', None)
@@ -95,6 +104,10 @@ class AttachmentSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     issue = serializers.ReadOnlyField(source='issue.id')
     datafile = serializers.FileField(max_length=None, use_url=True)
+    created = serializers.SerializerMethodField()
+
+    def get_created(self, obj):
+        return obj.created.strftime('%Y-%m-%d %H:%M:%S')
 
     def get_url(self, obj):
         request = self.context.get('request', None)
@@ -120,6 +133,14 @@ class IssueSerializer(serializers.ModelSerializer):
     watch = serializers.SerializerMethodField()
     unwatch = serializers.SerializerMethodField()
     owner = serializers.ReadOnlyField(source='owner.username')
+    created_at = serializers.SerializerMethodField()
+    updated_at = serializers.SerializerMethodField()
+
+    def get_created_at(self, obj):
+        return obj.created_at.strftime('%Y-%m-%d %H:%M:%S')
+
+    def get_updated_at(self, obj):
+        return obj.updated_at.strftime('%Y-%m-%d %H:%M:%S')
 
     def get_vote(self, obj):
         request = self.context.get('request', None)
