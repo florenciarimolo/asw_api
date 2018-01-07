@@ -65,7 +65,7 @@ class IssuesList(generics.ListCreateAPIView):
     queryset = Issues.objects.all()
     serializer_class = IssueSerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = ('kind', 'priority', 'status', 'assignee')
+    filter_fields = ('kind', 'priority', 'status', 'owner')
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user, status='New')
